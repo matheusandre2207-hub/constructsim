@@ -244,14 +244,7 @@
     </div>
   </div>
 
-  <div id="camera-hint">Arraste a direita para câmera 360°<br>Joystick à esquerda para andar</div>
-
-  <div id="zone-joystick" class="touch-zone">
-    <div id="joystick-base">
-      <div id="joystick-thumb"></div>
-    </div>
-  </div>
-  <div id="zone-camera" class="touch-zone"></div>
+  <div id="camera-hint">Mouse para girar câmera<br>WASD para andar | Space/Shift para subir/descer</div>
 
   <div id="canvas-container"></div>
 
@@ -385,6 +378,26 @@
     const DOOR_MAIN = { x: -0.75, z: 3.0 };
     const DOOR_INT  = { x: 1.5,   z: 0.0 };
 
+    function buildStairs(offsetY, floorIndex = 0) {
+      const isEven = (floorIndex % 2 === 0);
+      const startX = isEven ? 2.0 : 5.5;
+      const startZ = isEven ? -2.0 : -1.0;
+      const dirX = isEven ? 1 : -1;
+      
+      for (let s = 0; s < 14; s++) {
+        blueprint.push({
+          type: 'WOOD',
+          x: startX + (s * 0.25 * dirX),
+          y: offsetY + s * 0.18 + 0.09,
+          z: startZ,
+          len: 0.25, h: 0.18, w: 1.2,
+          rot: {x:0, y:0, z:0},
+          sortY: offsetY + 4.5 + s * 0.01,
+          claimed: false
+        });
+      }
+    }
+
     function generateRigidArchitecture(floors = 1, paintColor = null) {
       const layers = 36;
       const doorH = 30;
@@ -397,11 +410,14 @@
       const openDiv   = [[-0.45, 0.45]];
 
       for (let f = 0; f < floors; f++) {
+        const floorSortBase = f * 1000;
+        const offsetY = f * layers * TIJOLO_A;
+        const startIndex = blueprint.length;
+
         for (let l = 0; l < layers; l++) {
-          const y = (f * layers + l) * TIJOLO_A + TIJOLO_A / 2;
+          const y = offsetY + l * TIJOLO_A + TIJOLO_A / 2;
           const even = (l % 2 === 0);
 
-          // Fix for perfect corner interlocking (Zipper effect without gaps)
           const outerX_min = -3.0 - TIJOLO_P / 2;
           const outerX_max =  6.0 + TIJOLO_P / 2;
           const innerX_min = -3.0 + TIJOLO_P / 2;
@@ -421,7 +437,7 @@
           const xWallOpeningsSouth = [];
           
           if (f === 0 && l < doorH) xWallOpeningsSouth.push([...openSouth[0]]);
-          else if (f > 0 && l >= winMin && l < winMax) xWallOpeningsSouth.push([...openSouth[0]]); // Janela no lugar da porta
+          else if (f > 0 && l >= winMin && l < winMax) xWallOpeningsSouth.push([...openSouth[0]]);
           
           if (l >= winMin && l < winMax) xWallOpeningsSouth.push([...openSouth[1]]);
 
@@ -440,27 +456,49 @@
           const divZMax = even ? (3.0 - TIJOLO_P / 2)  : (3.0 + TIJOLO_P / 2);
           buildWallLine(divZMin, divZMax, 1.5, y, 'Z', (l < doorH) ? openDiv : [], false);
         }
-      }
 
-      for (let f = 0; f < floors; f++) {
-        addWoodFrames(f * layers * TIJOLO_A);
-        buildFloorAndGrout(f === 0 ? 0.01 : f * layers * TIJOLO_A, f);
-        addDoorsAndWindows(f * layers * TIJOLO_A, f);
+        addWoodFrames(offsetY, f);
+        buildFloorAndGrout(f === 0 ? 0.01 : offsetY, f);
+        addDoorsAndWindows(offsetY, f);
+        
+        if (f < floors - 1) {
+          buildStairs(offsetY, f);
+        }
+
+        for (let i = startIndex; i < blueprint.length; i++) {
+          if (blueprint[i].sortY !== undefined) {
+             blueprint[i].sortY += floorSortBase;
+          } else {
+             blueprint[i].sortY = blueprint[i].y + floorSortBase;
+          }
+          blueprint[i].floorIndex = f;
+        }
       }
       
-      addLadders(floors);
-      buildTriangularGables(floors * layers);
-      buildRealisticRoofStructure(floors * layers);
+      const totalLayers = floors * layers;
+      const roofSortBase = floors * 1000;
+      const roofStartIndex = blueprint.length;
+      
+      buildTriangularGables(totalLayers);
+      buildRealisticRoofStructure(totalLayers);
 
-      // Pintura Externa
+      for (let i = roofStartIndex; i < blueprint.length; i++) {
+         if (blueprint[i].sortY !== undefined) blueprint[i].sortY += roofSortBase;
+         else blueprint[i].sortY = blueprint[i].y + roofSortBase;
+         blueprint[i].floorIndex = floors;
+      }
+
       if (paintColor) {
-        for (let x = -3.5; x <= 6.5; x += 1.5) {
-           blueprint.push({ type: 'PAINT', x: x, y: 0, z: 3.5, color: paintColor, sortY: 20.0, claimed: false });
-           blueprint.push({ type: 'PAINT', x: x, y: 0, z: -3.5, color: paintColor, sortY: 20.0, claimed: false });
-        }
-        for (let z = -3.5; z <= 3.5; z += 1.5) {
-           blueprint.push({ type: 'PAINT', x: -3.5, y: 0, z: z, color: paintColor, sortY: 20.0, claimed: false });
-           blueprint.push({ type: 'PAINT', x: 6.5, y: 0, z: z, color: paintColor, sortY: 20.0, claimed: false });
+        for (let f = 0; f <= floors; f++) {
+          const paintSortBase = (floors + 1) * 1000 + f;
+          for (let x = -3.5; x <= 6.5; x += 1.5) {
+             blueprint.push({ type: 'PAINT', x: x, y: 0, z: 3.5, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
+             blueprint.push({ type: 'PAINT', x: x, y: 0, z: -3.5, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
+          }
+          for (let z = -3.5; z <= 3.5; z += 1.5) {
+             blueprint.push({ type: 'PAINT', x: -3.5, y: 0, z: z, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
+             blueprint.push({ type: 'PAINT', x: 6.5, y: 0, z: z, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
+          }
         }
       }
 
@@ -476,61 +514,39 @@
       stockFloor = initialFloor;
     }
 
-    function addLadders(floors) {
-      const lZ = 3.3; 
-      const rotX = -0.25;
-      const h = 3.8 * floors;
-      const y = h / 2;
-      blueprint.push({ type: 'LADDER', x: -2.0, y: y, sortY: 5.0, z: lZ, len: 0.5, h: h, rot: {x: rotX}, claimed: false, ladderId: 1 });
-      blueprint.push({ type: 'LADDER', x: 0.5,  y: y, sortY: 5.0, z: lZ, len: 0.5, h: h, rot: {x: rotX}, claimed: false, ladderId: 2 });
-      blueprint.push({ type: 'LADDER', x: 4.5,  y: y, sortY: 5.0, z: lZ, len: 0.5, h: h, rot: {x: rotX}, claimed: false, ladderId: 3 });
-      
-      const lZn = -3.3;
-      const rotXn = 0.25;
-      blueprint.push({ type: 'LADDER', x: -2.0, y: y, sortY: 5.0, z: lZn, len: 0.5, h: h, rot: {x: rotXn}, claimed: false, ladderId: 4 });
-      blueprint.push({ type: 'LADDER', x: 0.5,  y: y, sortY: 5.0, z: lZn, len: 0.5, h: h, rot: {x: rotXn}, claimed: false, ladderId: 5 });
-      blueprint.push({ type: 'LADDER', x: 4.5,  y: y, sortY: 5.0, z: lZn, len: 0.5, h: h, rot: {x: rotXn}, claimed: false, ladderId: 6 });
-
-      blueprint.push({ type: 'REMOVE_LADDER', x: -2.0, y: 0, sortY: 8.0, z: lZ, claimed: false, ladderId: 1 });
-      blueprint.push({ type: 'REMOVE_LADDER', x: 0.5,  y: 0, sortY: 8.0, z: lZ, claimed: false, ladderId: 2 });
-      blueprint.push({ type: 'REMOVE_LADDER', x: 4.5,  y: 0, sortY: 8.0, z: lZ, claimed: false, ladderId: 3 });
-      blueprint.push({ type: 'REMOVE_LADDER', x: -2.0, y: 0, sortY: 8.0, z: lZn, claimed: false, ladderId: 4 });
-      blueprint.push({ type: 'REMOVE_LADDER', x: 0.5,  y: 0, sortY: 8.0, z: lZn, claimed: false, ladderId: 5 });
-      blueprint.push({ type: 'REMOVE_LADDER', x: 4.5,  y: 0, sortY: 8.0, z: lZn, claimed: false, ladderId: 6 });
-    }
-
     function addDoorsAndWindows(offsetY = 0, floorIndex = 0) {
       // Windows
       blueprint.push({
-        type: 'WINDOW', x: -1.1, y: offsetY + 0.91 + 1.19/2, sortY: 4.0, z: -3.0,
+        type: 'WINDOW', x: -1.1, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.0, z: -3.0,
         len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
       });
       blueprint.push({
-        type: 'WINDOW', x: 3.7, y: offsetY + 0.91 + 1.19/2, sortY: 4.0, z: -3.0,
+        type: 'WINDOW', x: 3.7, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.0, z: -3.0,
         len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
       });
       blueprint.push({
-        type: 'WINDOW', x: 3.7, y: offsetY + 0.91 + 1.19/2, sortY: 4.0, z: 3.0,
+        type: 'WINDOW', x: 3.7, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.0, z: 3.0,
         len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
       });
       blueprint.push({
-        type: 'WINDOW', x: 6.0, y: offsetY + 0.91 + 1.19/2, sortY: 4.0, z: 0.0,
+        type: 'WINDOW', x: 6.0, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.0, z: 0.0,
         len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
       });
 
-      // Doors or Windows depending on floor
+      // Internal Door
+      blueprint.push({
+        type: 'DOOR', x: 1.5, y: offsetY + 2.10/2, sortY: offsetY + 4.1, z: 0.0,
+        len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
+      });
+
       if (floorIndex === 0) {
         blueprint.push({
-          type: 'DOOR', x: -0.75, y: offsetY + 2.10/2, sortY: 4.1, z: 3.0,
+          type: 'DOOR', x: -0.75, y: offsetY + 2.10/2, sortY: offsetY + 4.1, z: 3.0,
           len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
-        });
-        blueprint.push({
-          type: 'DOOR', x: 1.5, y: offsetY + 2.10/2, sortY: 4.1, z: 0.0,
-          len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
         });
       } else {
         blueprint.push({
-          type: 'WINDOW', x: -0.75, y: offsetY + 0.91 + 1.19/2, sortY: 4.1, z: 3.0,
+          type: 'WINDOW', x: -0.75, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.1, z: 3.0,
           len: 0.9, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
         });
       }
@@ -584,15 +600,23 @@
       }
     }
 
-    function addWoodFrames(offsetY = 0) {
+    function addWoodFrames(offsetY = 0, floorIndex = 0) {
       const frames = [
-        { x: -1.2, z: 3.0, w: 0.06, h: 2.10, d: TIJOLO_P, y: offsetY + 1.05 },
-        { x: -0.3, z: 3.0, w: 0.06, h: 2.10, d: TIJOLO_P, y: offsetY + 1.05 },
-        { x: -0.75, z: 3.0, w: 0.96, h: 0.06, d: TIJOLO_P, y: offsetY + 2.10 },
         { x: 1.5, z: -0.45, w: TIJOLO_P, h: 2.10, d: 0.06, y: offsetY + 1.05 },
         { x: 1.5, z: 0.45,  w: TIJOLO_P, h: 2.10, d: 0.06, y: offsetY + 1.05 },
         { x: 1.5, z: 0.0,   w: TIJOLO_P, h: 0.06, d: 0.96, y: offsetY + 2.10 }
       ];
+
+      if (floorIndex === 0) {
+        frames.push({ x: -1.2, z: 3.0, w: 0.06, h: 2.10, d: TIJOLO_P, y: offsetY + 1.05 });
+        frames.push({ x: -0.3, z: 3.0, w: 0.06, h: 2.10, d: TIJOLO_P, y: offsetY + 1.05 });
+        frames.push({ x: -0.75, z: 3.0, w: 0.96, h: 0.06, d: TIJOLO_P, y: offsetY + 2.10 });
+      } else {
+        frames.push({ x: -1.2, z: 3.0, w: 0.06, h: 1.19, d: TIJOLO_P, y: offsetY + 0.91 + 1.19/2 });
+        frames.push({ x: -0.3, z: 3.0, w: 0.06, h: 1.19, d: TIJOLO_P, y: offsetY + 0.91 + 1.19/2 });
+        frames.push({ x: -0.75, z: 3.0, w: 0.96, h: 0.06, d: TIJOLO_P, y: offsetY + 0.91 + 1.19 });
+        frames.push({ x: -0.75, z: 3.0, w: 0.96, h: 0.06, d: TIJOLO_P, y: offsetY + 0.91 });
+      }
 
       frames.forEach(f => {
         blueprint.push({
@@ -618,7 +642,7 @@
         if (halfSpan < 0.15) break;
 
         gablePositionsX.forEach(posX => {
-          buildWallLine(-halfSpan, halfSpan, posX, y, 'Z', []);
+          buildWallLine(-halfSpan, halfSpan, posX, y, 'Z', [], posX !== 1.5);
         });
       }
     }
@@ -737,14 +761,13 @@
       }
     }
 
-    function buildFloorAndGrout(floorY = 0.01) {
+    function buildFloorAndGrout(offsetY = 0.01, floorIndex = 0) {
       const TILE_SIZE = 0.60;
       const GAP = 0.005;
       const STEP = TILE_SIZE + GAP;
-      const floorY = 0.01;
       const thickness = 0.02;
 
-      function fillRoom(minX, maxX, minZ, maxZ) {
+      function fillRoom(minX, maxX, minZ, maxZ, hasHole = false) {
         const Xc = (minX + maxX) / 2;
         const Zc = (minZ + maxZ) / 2;
         const grouts = [];
@@ -757,6 +780,8 @@
             let x_center = Xc + i * STEP;
             let z_center = Zc + j * STEP;
             
+            if (hasHole && x_center > 1.8 && x_center < 5.8 && z_center > -2.6 && z_center < -0.4) continue;
+
             let x_min = x_center - TILE_SIZE / 2;
             let x_max = x_center + TILE_SIZE / 2;
             let z_min = z_center - TILE_SIZE / 2;
@@ -773,8 +798,8 @@
               blueprint.push({
                 type: 'FLOOR',
                 x: x_start + widthX / 2,
-                y: floorY,
-                sortY: 3.0 + (x_start + z_start) * 0.0001,
+                y: offsetY,
+                sortY: offsetY - 0.5 + (x_start + z_start) * 0.0001,
                 z: z_start + depthZ / 2,
                 len: widthX,
                 h: thickness,
@@ -793,14 +818,21 @@
           let z_end = Math.min(maxZ, z_grout_center + GAP / 2);
           
           if (z_start < z_end) {
-            blueprint.push({
-              type: 'GROUT',
-              x: Xc,
-              y: floorY,
-              sortY: 3.1, z: z_start + (z_end - z_start) / 2,
-              len: maxX - minX, h: thickness * 0.9, w: z_end - z_start,
-              rot: { x: 0, y: 0, z: 0 }, claimed: false
-            });
+            if (hasHole && z_grout_center > -2.6 && z_grout_center < -0.4) {
+                blueprint.push({
+                  type: 'GROUT', x: 1.65, y: offsetY, sortY: offsetY - 0.4, z: z_grout_center,
+                  len: 0.3, h: thickness * 0.9, w: GAP, rot: {x:0, y:0, z:0}, claimed: false
+                });
+                blueprint.push({
+                  type: 'GROUT', x: 5.9, y: offsetY, sortY: offsetY - 0.4, z: z_grout_center,
+                  len: 0.2, h: thickness * 0.9, w: GAP, rot: {x:0, y:0, z:0}, claimed: false
+                });
+            } else {
+                blueprint.push({
+                  type: 'GROUT', x: Xc, y: offsetY, sortY: offsetY - 0.4, z: z_grout_center,
+                  len: maxX - minX, h: thickness * 0.9, w: GAP, rot: {x:0, y:0, z:0}, claimed: false
+                });
+            }
           }
         }
         
@@ -811,32 +843,41 @@
           let x_end = Math.min(maxX, x_grout_center + GAP / 2);
           
           if (x_start < x_end) {
-            grouts.push({
-              type: 'GROUT', x: x_start + (x_end - x_start) / 2, y: floorY, sortY: 3.1, z: Zc,
-              len: x_end - x_start, h: thickness * 0.9, w: maxZ - minZ,
-              rot: { x: 0, y: 0, z: 0 }, claimed: false
-            });
+            if (hasHole && x_grout_center > 1.8 && x_grout_center < 5.8) {
+                grouts.push({
+                  type: 'GROUT', x: x_grout_center, y: offsetY, sortY: offsetY - 0.4, z: -2.8,
+                  len: GAP, h: thickness * 0.9, w: 0.4, rot: {x:0, y:0, z:0}, claimed: false
+                });
+                grouts.push({
+                  type: 'GROUT', x: x_grout_center, y: offsetY, sortY: offsetY - 0.4, z: 1.3,
+                  len: GAP, h: thickness * 0.9, w: 3.4, rot: {x:0, y:0, z:0}, claimed: false
+                });
+            } else {
+                grouts.push({
+                  type: 'GROUT', x: x_grout_center, y: offsetY, sortY: offsetY - 0.4, z: Zc,
+                  len: GAP, h: thickness * 0.9, w: maxZ - minZ,
+                  rot: { x: 0, y: 0, z: 0 }, claimed: false
+                });
+            }
           }
         }
         grouts.forEach(g => blueprint.push(g));
       }
 
       const tp2 = TIJOLO_P / 2;
-      fillRoom(-3.0 + tp2, 1.5 - tp2, -3.0 + tp2, 3.0 - tp2); // R1
-      fillRoom(1.5 + tp2, 6.0 - tp2, -3.0 + tp2, 3.0 - tp2); // R2
+      fillRoom(-3.0 + tp2, 1.5 - tp2, -3.0 + tp2, 3.0 - tp2, false);
+      fillRoom(1.5 + tp2, 6.0 - tp2, -3.0 + tp2, 3.0 - tp2, floorIndex > 0);
 
       // Soleiras (Thresholds) para as portas
       blueprint.push({
-        type: 'FLOOR', x: 1.5, y: floorY, sortY: 3.05, z: 0,
+        type: 'FLOOR', x: 1.5, y: offsetY, sortY: offsetY - 0.45, z: 0,
         len: TIJOLO_P, h: thickness, w: 0.9, rot: { x:0, y:0, z:0 }, claimed: false
       });
       blueprint.push({
-        type: 'FLOOR', x: -0.75, y: floorY, sortY: 3.05, z: 3.0,
+        type: 'FLOOR', x: -0.75, y: offsetY, sortY: offsetY - 0.45, z: 3.0,
         len: 0.9, h: thickness, w: TIJOLO_P, rot: { x:0, y:0, z:0 }, claimed: false
       });
     }
-
-    generateRigidArchitecture();
 
     // =======================================================
     // 5. NAVEGAÇÃO E WAYPOINTS
@@ -992,9 +1033,15 @@
         if (this.state === 'THINKING') {
           if (this.timer >= 0.15) {
             this.timer = 0;
-            let task = null;
+            
+            if (this.group.position.y > 0.1) {
+               this.waypoints = [new THREE.Vector3(3.75 + this.index*0.1, 0, -1.5 + this.index*0.1)];
+               this.state = 'WALK_TO_STAIRS_DOWN';
+               this.walkTime = 0;
+               return;
+            }
 
-            // Busca linear partindo de blueprintHead
+            let task = null;
             for (let i = blueprintHead; i < blueprint.length; i++) {
               if (!blueprint[i].claimed) {
                 blueprint[i].claimed = true;
@@ -1005,113 +1052,34 @@
 
             if (!task) {
               this.state = 'IDLE';
-              this.timer = 0;
               return;
             }
 
             this.currentTask = task;
             let stockTarget = palletBricksPos;
-            if (task.type === 'WOOD' || task.type === 'LADDER') stockTarget = palletWoodPos;
+            if (task.type === 'WOOD') stockTarget = palletWoodPos;
             else if (task.type === 'ROOF' || task.type === 'RIDGE') stockTarget = palletRoofPos;
             else if (task.type === 'FLOOR' || task.type === 'GROUT' || task.type === 'PAINT') stockTarget = palletFloorPos;
 
-            if (task.type === 'REMOVE_LADDER') {
-              this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(task.x, 0, task.z));
-              this.state = 'WALK_TO_REMOVE';
-              this.walkTime = 0;
-            } else {
-              this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(
-                stockTarget.x + 1.2, 0, stockTarget.z + (this.index * 0.3)
-              ));
-              this.state = 'WALK_TO_STOCK';
-              this.walkTime = 0;
-            }
-          }
-        }
-        else if (this.state === 'IDLE') {
-          if (this.timer >= 0) {
-            this.timer -= dt;
-            if (this.timer <= 0) {
-              if (Math.random() < 0.4 && interactables.length > 0) {
-                const target = interactables[Math.floor(Math.random() * interactables.length)];
-                this.targetInteractable = target;
-                const pos = new THREE.Vector3();
-                target.getWorldPosition(pos);
-                
-                const offset = target.userData.type === 'WINDOW' ? 0.8 : 0.6;
-                const forward = new THREE.Vector3(0, 0, 1).applyEuler(target.rotation);
-                const rx = (Math.random() - 0.5) * 0.4;
-                const rz = (Math.random() - 0.5) * 0.4;
-                const standPos = pos.clone().add(forward.multiplyScalar(offset)).add(new THREE.Vector3(rx, 0, rz));
-                
-                this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(standPos.x, 0, standPos.z));
-                this.state = 'WALK_TO_INTERACT';
-                this.walkTime = 0;
-              } else {
-                let destPos;
-                if (Math.random() < 0.6) {
-                  const rx = -2 + Math.random() * 7; 
-                  const rz = -2 + Math.random() * 4; 
-                  destPos = new THREE.Vector3(rx, 0, rz);
-                } else {
-                  const rx = -4 + Math.random() * 10;
-                  const rz = 4.5 + Math.random() * 2;
-                  destPos = new THREE.Vector3(rx, 0, rz);
-                }
-                this.waypoints = resolvePathWaypoints(this.group.position, destPos);
-                this.state = 'WANDERING';
-                this.walkTime = 0;
-              }
-            }
-          } else {
-            this.timer = 0; 
-            statusEl.textContent = "Obra finalizada! Equipe verificando detalhes...";
-          }
-        }
-        else if (this.state === 'WANDERING' || this.state === 'WALK_TO_INTERACT') {
-          if (this.followWaypoints(dt)) {
-            if (this.state === 'WALK_TO_INTERACT' && this.targetInteractable) {
-              const obj = this.targetInteractable;
-              obj.userData.isOpen = !obj.userData.isOpen;
-              obj.userData.targetAngle = obj.userData.isOpen ? Math.PI / 2 : 0;
-              statusEl.textContent = `Operário testando as ${obj.userData.type === 'WINDOW' ? 'janelas' : 'portas'}...`;
-            }
-            this.state = 'IDLE';
-            this.timer = 0.2 + Math.random() * 0.5;
-          }
-        }
-        else if (this.state === 'WALK_TO_REMOVE') {
-          if (this.followWaypoints(dt)) {
-            if (spawnedLadders[this.currentTask.ladderId]) {
-              scene.remove(spawnedLadders[this.currentTask.ladderId]);
-              delete spawnedLadders[this.currentTask.ladderId];
-            }
-            this.carriedMesh.visible = true;
-            this.carriedMesh.material = woodMat;
-            this.carriedMesh.scale.set(0.6, 0.6, 1.5);
-            
-            this.currentTask.completed = true;
-            while (blueprintHead < blueprint.length && blueprint[blueprintHead].completed) blueprintHead++;
-
-            statusEl.textContent = "Guardando escadas...";
-            telhasStatusEl.textContent = "Preparação de Acabamento";
-            
             this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(
-                 palletWoodPos.x + 1.2, 0, palletWoodPos.z + (this.index * 0.3)
+              stockTarget.x + 1.2, 0, stockTarget.z + (this.index * 0.3)
             ));
-            this.state = 'WALK_TO_RETURN_LADDER';
+            this.state = 'WALK_TO_STOCK';
             this.walkTime = 0;
           }
         }
-        else if (this.state === 'WALK_TO_RETURN_LADDER') {
-          if (this.followWaypoints(dt)) {
-            this.carriedMesh.visible = false;
-            stockWood += 1;
-            woodStackPivot.scale.y = Math.max(0.01, stockWood / (initialWood || 1));
-            this.currentTask = null;
-            this.state = 'THINKING';
-            this.timer = 0;
-          }
+        else if (this.state === 'WALK_TO_STAIRS_DOWN') {
+           if (this.followWaypoints(dt)) {
+              this.state = 'CLIMBING_DOWN';
+              this.timer = 0;
+           }
+        }
+        else if (this.state === 'CLIMBING_DOWN') {
+           this.group.position.y -= dt * 4.0;
+           if (this.group.position.y <= 0) {
+              this.group.position.y = 0;
+              this.state = 'THINKING';
+           }
         }
         else if (this.state === 'WALK_TO_STOCK') {
           if (this.followWaypoints(dt)) {
@@ -1124,10 +1092,10 @@
             this.timer = 0;
             this.carriedMesh.visible = true;
 
-            if (this.currentTask.type === 'WOOD' || this.currentTask.type === 'WINDOW' || this.currentTask.type === 'DOOR' || this.currentTask.type === 'LADDER') {
+            if (this.currentTask.type === 'WOOD' || this.currentTask.type === 'WINDOW' || this.currentTask.type === 'DOOR') {
               this.carriedMesh.material = woodMat;
               this.carriedMesh.scale.set(0.6, 0.6, 1.5);
-              if (this.currentTask.type === 'WOOD' || this.currentTask.type === 'LADDER') {
+              if (this.currentTask.type === 'WOOD') {
                 stockWood = Math.max(0, stockWood - 1);
                 woodStackPivot.scale.y = Math.max(0.01, stockWood / (initialWood || 1));
               }
@@ -1157,68 +1125,53 @@
               brickStackPivot.scale.y = Math.max(0.01, stockBricks / initialBricks);
             }
 
-            let groundTargetX = this.currentTask.x;
-            let groundTargetZ = this.currentTask.z;
-
-            if (this.currentTask.y > 2.5) {
-              let nearestId = null;
-              let minDist = Infinity;
-              for (let id in spawnedLadders) {
-                 const lPos = spawnedLadders[id].position;
-                 const dist = new THREE.Vector2(this.currentTask.x - lPos.x, this.currentTask.z - lPos.z).length();
-                 if (dist < minDist) {
-                    minDist = dist; nearestId = id;
-                 }
-              }
-              if (nearestId && spawnedLadders[nearestId]) {
-                 groundTargetX = spawnedLadders[nearestId].position.x;
-                 groundTargetZ = spawnedLadders[nearestId].position.z;
-              } else {
-                 groundTargetZ = this.currentTask.z >= 0 ? 3.6 : -3.6;
-              }
-            } else if (this.currentTask.type === 'FLOOR' || this.currentTask.type === 'GROUT' || this.currentTask.type === 'PAINT') {
-              groundTargetX = this.currentTask.x;
-              groundTargetZ = this.currentTask.z;
+            const taskFloor = this.currentTask.floorIndex || 0;
+            if (taskFloor > 0) {
+               this.waypoints = [new THREE.Vector3(3.75 + this.index*0.1, 0, -1.5 + this.index*0.1)];
+               this.state = 'WALK_TO_STAIRS_UP';
             } else {
-              groundTargetX += (this.currentTask.rot && this.currentTask.rot.y !== 0 ? 0.4 : 0);
-              groundTargetZ += (this.currentTask.rot && this.currentTask.rot.y === 0 ? 0.4 : 0);
+               let groundTargetX = this.currentTask.x;
+               let groundTargetZ = this.currentTask.z;
+               if (this.currentTask.type !== 'FLOOR' && this.currentTask.type !== 'GROUT' && this.currentTask.type !== 'PAINT') {
+                  groundTargetX += (this.currentTask.rot && this.currentTask.rot.y !== 0 ? 0.4 : 0);
+                  groundTargetZ += (this.currentTask.rot && this.currentTask.rot.y === 0 ? 0.4 : 0);
+               }
+               const rX = (Math.random() - 0.5) * 0.4;
+               const rZ = (Math.random() - 0.5) * 0.4;
+               this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(groundTargetX + rX, 0, groundTargetZ + rZ));
+               this.state = 'WALK_TO_WALL';
             }
-
-            const rX = (Math.random() - 0.5) * 0.4;
-            const rZ = (Math.random() - 0.5) * 0.4;
-            this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(groundTargetX + rX, 0, groundTargetZ + rZ));
-            this.state = 'WALK_TO_WALL';
             this.walkTime = 0;
           }
         }
-        else if (this.state === 'WALK_TO_WALL') {
-          if (this.followWaypoints(dt)) {
-            if (this.currentTask.y > 2.5 && this.currentTask.type !== 'LADDER') {
-               this.state = 'CLIMBING_UP';
-               this.timer = 0;
-            } else {
-               this.state = 'PLACING';
-               this.timer = 0;
-            }
-          }
+        else if (this.state === 'WALK_TO_STAIRS_UP') {
+           if (this.followWaypoints(dt)) {
+              this.state = 'CLIMBING_UP';
+              this.targetY = (this.currentTask.floorIndex || 0) * 2.52;
+           }
         }
         else if (this.state === 'CLIMBING_UP') {
-          this.timer += dt;
-          this.group.position.y += dt * 3.0; 
-          if (this.group.position.y >= 1.5) {
-             this.group.position.y = 1.5;
-             this.state = 'PLACING';
-             this.timer = 0;
-          }
+           this.group.position.y += dt * 4.0;
+           if (this.group.position.y >= this.targetY) {
+              this.group.position.y = this.targetY;
+              
+              let groundTargetX = this.currentTask.x;
+              let groundTargetZ = this.currentTask.z;
+              if (this.currentTask.type !== 'FLOOR' && this.currentTask.type !== 'GROUT' && this.currentTask.type !== 'PAINT') {
+                  groundTargetX += (this.currentTask.rot && this.currentTask.rot.y !== 0 ? 0.4 : 0);
+                  groundTargetZ += (this.currentTask.rot && this.currentTask.rot.y === 0 ? 0.4 : 0);
+              }
+              const rX = (Math.random() - 0.5) * 0.4;
+              const rZ = (Math.random() - 0.5) * 0.4;
+              this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(groundTargetX + rX, this.targetY, groundTargetZ + rZ));
+              this.state = 'WALK_TO_WALL';
+              this.walkTime = 0;
+           }
         }
-        else if (this.state === 'CLIMBING_DOWN') {
-          this.timer += dt;
-          this.group.position.y -= dt * 3.0;
-          if (this.group.position.y <= 0) {
-             this.group.position.y = 0;
-             this.currentTask = null;
-             this.state = 'THINKING';
-             this.timer = 0;
+        else if (this.state === 'WALK_TO_WALL') {
+          if (this.followWaypoints(dt)) {
+            this.state = 'PLACING';
+            this.timer = 0;
           }
         }
         else if (this.state === 'PLACING') {
@@ -1235,7 +1188,6 @@
             
             this.currentTask.completed = true;
 
-            // Avança o ponteiro blueprintHead para O(1) sem alterar a array
             while (blueprintHead < blueprint.length && blueprint[blueprintHead].completed) {
               blueprintHead++;
             }
@@ -1247,29 +1199,21 @@
               telhasStatusEl.textContent = "Cobertura Cerâmica Alinhada";
               statusEl.textContent = "Assentando telhas cerâmicas e cumeeiras...";
             } else if (this.currentTask.type === 'WOOD') {
-              telhasStatusEl.textContent = "Estrutura & Caibros de Madeira";
-              statusEl.textContent = "Fixando vigas e caibros do telhado...";
+              telhasStatusEl.textContent = "Estrutura de Madeira";
+              statusEl.textContent = "Fixando estruturas/escadas...";
             } else if (this.currentTask.type === 'FLOOR') {
               telhasStatusEl.textContent = "Piso & Acabamento Final";
               statusEl.textContent = "Assentando cerâmica (piso branco)...";
             } else if (this.currentTask.type === 'GROUT') {
               telhasStatusEl.textContent = "Piso & Acabamento Final";
               statusEl.textContent = "Aplicando rejunte no piso...";
-            } else if (this.currentTask.type === 'LADDER') {
-              telhasStatusEl.textContent = "Preparação para Telhado";
-              statusEl.textContent = "Posicionando escadas...";
             } else if (this.currentTask.type === 'PAINT') {
               telhasStatusEl.textContent = "Acabamento & Pintura";
               statusEl.textContent = "Pintando a fachada externa...";
             }
 
-            if (this.currentTask.y > 2.5 && this.currentTask.type !== 'LADDER' && this.currentTask.type !== 'PAINT') {
-               this.state = 'CLIMBING_DOWN';
-               this.timer = 0;
-            } else {
-               this.currentTask = null;
-               this.state = 'THINKING';
-            }
+            this.currentTask = null;
+            this.state = 'THINKING';
           }
         }
         else if (this.state === 'IDLE') {
@@ -1423,6 +1367,10 @@
           inst.mesh.count = 0; // Starts empty
           inst.mesh.castShadow = true;
           inst.mesh.receiveShadow = true;
+          if (key === 'BRICK' || key === 'CUT_BRICK') {
+              // Bricks use their natural texture color natively
+              inst.mesh.instanceColor = null;
+          }
           scene.add(inst.mesh);
         }
       }
@@ -1521,12 +1469,14 @@
       inst.mesh.setMatrixAt(inst.count, dummy.matrix);
       inst.mesh.instanceMatrix.needsUpdate = true;
       
-      // Store brick color for painting
+      // Store brick data for painting
       if (item.type === 'BRICK' || item.type === 'CUT_BRICK') {
         if (!inst.meta) inst.meta = [];
-        inst.meta[inst.count] = { x: item.x, z: item.z, isExternal: item.isExternal };
-        inst.mesh.setColorAt(inst.count, inst.mat.color);
-        inst.mesh.instanceColor.needsUpdate = true;
+        inst.meta[inst.count] = { 
+          x: item.x, y: item.y, z: item.z, 
+          len: item.len, h: item.h, w: item.w, 
+          rot: item.rot, isExternal: item.isExternal 
+        };
       }
 
       inst.count++;
@@ -1534,19 +1484,70 @@
     }
 
     function applyPaintTask(task) {
-        const paintCol = new THREE.Color(task.color);
-        ['BRICK', 'CUT_BRICK'].forEach(k => {
-           const inst = instances[k];
-           if (inst && inst.meta) {
-              for(let i=0; i<inst.count; i++) {
-                 const m = inst.meta[i];
-                 if (m && m.isExternal && Math.abs(m.x - task.x) < 2.0 && Math.abs(m.z - task.z) < 2.0) {
-                    inst.mesh.setColorAt(i, paintCol);
-                 }
-              }
-              inst.mesh.instanceColor.needsUpdate = true;
-           }
-        });
+      const paintMat = new THREE.MeshStandardMaterial({
+        color: task.color,
+        roughness: 0.8,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1
+      });
+      const decalGeo = new THREE.BoxGeometry(1, 1, 1);
+      const paintedBricks = [];
+      const floorYBase = (task.floorIndex || 0) * 2.52;
+      
+      ['BRICK', 'CUT_BRICK'].forEach(k => {
+         const inst = instances[k];
+         if (inst && inst.meta) {
+            for(let i=0; i<inst.count; i++) {
+               const m = inst.meta[i];
+               if (m && m.isExternal && m.y >= floorYBase && m.y < floorYBase + 2.6) {
+                  if (Math.abs(m.x - task.x) < 2.0 && Math.abs(m.z - task.z) < 2.0) {
+                      if (!m.painted) {
+                          m.painted = true;
+                          paintedBricks.push(m);
+                      }
+                  }
+               }
+            }
+         }
+      });
+      
+      if (paintedBricks.length === 0) return;
+      
+      const paintInst = new THREE.InstancedMesh(decalGeo, paintMat, paintedBricks.length);
+      const isZWall = (task.z > 2.0 || task.z < -2.0);
+      
+      for (let i = 0; i < paintedBricks.length; i++) {
+         const b = paintedBricks[i];
+         dummy.position.set(b.x, b.y, b.z);
+         if (b.rot) {
+            dummy.rotation.x = b.rot.x || 0;
+            dummy.rotation.y = b.rot.y || 0;
+            dummy.rotation.z = b.rot.z || 0;
+         } else {
+            dummy.rotation.set(0, 0, 0);
+         }
+         
+         dummy.scale.set(b.len, b.h, 0.015);
+         
+         let offset = (b.w / 2) + 0.007;
+         
+         if (!b.rot || b.rot.y === 0) {
+             // X-wall brick: thickness is along Z
+             dummy.position.z += (b.z > 0) ? offset : -offset;
+         } else {
+             // Z-wall brick: thickness is along X
+             dummy.position.x += (b.x > 0) ? offset : -offset;
+         }
+         
+         dummy.updateMatrix();
+         paintInst.setMatrixAt(i, dummy.matrix);
+      }
+      
+      paintInst.instanceMatrix.needsUpdate = true;
+      paintInst.castShadow = true;
+      paintInst.receiveShadow = true;
+      scene.add(paintInst);
     }
 
     // =======================================================
@@ -1592,132 +1593,45 @@
     speedBtn.addEventListener('touchstart', e => e.stopPropagation());
 
     // =======================================================
-    // 8. CONTROLES TOUCH MOBILE & CÂMERA 360°
+    // 8. CONTROLES FREE FLY 360° (WASD + Space/Shift)
     // =======================================================
-    const inputMove = { x: 0, z: 0 };
     let camYaw = 0.35;
     let camPitch = 0.45;
-    const camDist = 15.0;
-    const playerCamPivot = new THREE.Vector3(1.5, 1.2, 0);
-
+    
     const keys = {};
     window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
     window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
-    const joyZone = document.getElementById('zone-joystick');
-    const joyBase = document.getElementById('joystick-base');
-    const joyThumb = document.getElementById('joystick-thumb');
-    let joyTouchId = null;
-    let joyCenter = { x: 0, y: 0 };
-
-    joyZone.addEventListener('touchstart', e => {
-      e.preventDefault();
-      const t = e.changedTouches[0];
-      joyTouchId = t.identifier;
-      joyCenter = { x: t.clientX, y: t.clientY };
-      joyBase.style.display = 'block';
-      joyBase.style.left = `${t.clientX}px`;
-      joyBase.style.top = `${t.clientY}px`;
-      joyThumb.style.transform = 'translate(-50%, -50%)';
-    }, { passive: false });
-
-    joyZone.addEventListener('touchmove', e => {
-      e.preventDefault();
-      for (let t of e.changedTouches) {
-        if (t.identifier === joyTouchId) {
-          const dx = t.clientX - joyCenter.x;
-          const dy = t.clientY - joyCenter.y;
-          const dist = Math.hypot(dx, dy);
-          const maxR = 48;
-          const angle = Math.atan2(dy, dx);
-          const clamped = Math.min(dist, maxR);
-
-          const tx = Math.cos(angle) * clamped;
-          const ty = Math.sin(angle) * clamped;
-          joyThumb.style.transform = `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px))`;
-
-          inputMove.x = tx / maxR;
-          inputMove.z = ty / maxR;
-        }
-      }
-    }, { passive: false });
-
-    function resetJoystick() {
-      joyTouchId = null;
-      joyBase.style.display = 'none';
-      inputMove.x = 0;
-      inputMove.z = 0;
-    }
-    joyZone.addEventListener('touchend', resetJoystick);
-    joyZone.addEventListener('touchcancel', resetJoystick);
-
-    const camZone = document.getElementById('zone-camera');
-    let camTouchId = null;
-    let lastCamTouch = { x: 0, y: 0 };
-
-    camZone.addEventListener('touchstart', e => {
-      e.preventDefault();
-      const t = e.changedTouches[0];
-      camTouchId = t.identifier;
-      lastCamTouch = { x: t.clientX, y: t.clientY };
-    }, { passive: false });
-
-    camZone.addEventListener('touchmove', e => {
-      e.preventDefault();
-      for (let t of e.changedTouches) {
-        if (t.identifier === camTouchId) {
-          const dx = t.clientX - lastCamTouch.x;
-          const dy = t.clientY - lastCamTouch.y;
-          lastCamTouch = { x: t.clientX, y: t.clientY };
-
-          camYaw -= dx * 0.007;
-          camPitch += dy * 0.005;
-          camPitch = Math.max(0.08, Math.min(Math.PI / 2 - 0.05, camPitch));
-        }
-      }
-    }, { passive: false });
-
-    camZone.addEventListener('touchend', () => { camTouchId = null; });
-    camZone.addEventListener('touchcancel', () => { camTouchId = null; });
-
     let isMouseDown = false;
     window.addEventListener('mousedown', e => {
-      if (e.target.closest('#hud')) return;
-      if (e.clientX > window.innerWidth / 2) isMouseDown = true;
+      if (e.target.closest('#hud') || e.target.closest('#main-menu')) return;
+      isMouseDown = true;
     });
     window.addEventListener('mouseup', () => isMouseDown = false);
     window.addEventListener('mousemove', e => {
       if (isMouseDown) {
         camYaw -= e.movementX * 0.005;
-        camPitch += e.movementY * 0.004;
-        camPitch = Math.max(0.08, Math.min(Math.PI / 2 - 0.05, camPitch));
+        camPitch -= e.movementY * 0.005;
+        camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
       }
     });
 
-    function updateCameraAndControls(delta) {
-      let kx = 0, kz = 0;
-      if (keys['w'] || keys['arrowup']) kz -= 1;
-      if (keys['s'] || keys['arrowdown']) kz += 1;
-      if (keys['a'] || keys['arrowleft']) kx -= 1;
-      if (keys['d'] || keys['arrowright']) kx += 1;
+    function updateCameraAndControls(dt) {
+      const moveSpeed = (keys['shift'] ? 25.0 : 12.0) * dt;
+      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+      const up = new THREE.Vector3(0, 1, 0);
 
-      const mx = inputMove.x !== 0 ? inputMove.x : kx;
-      const mz = inputMove.z !== 0 ? inputMove.z : kz;
+      if (keys['w']) camera.position.addScaledVector(forward, moveSpeed);
+      if (keys['s']) camera.position.addScaledVector(forward, -moveSpeed);
+      if (keys['a']) camera.position.addScaledVector(right, -moveSpeed);
+      if (keys['d']) camera.position.addScaledVector(right, moveSpeed);
+      if (keys[' ']) camera.position.addScaledVector(up, moveSpeed);
+      if (keys['shift']) camera.position.addScaledVector(up, -moveSpeed);
 
-      if (Math.abs(mx) > 0.05 || Math.abs(mz) > 0.05) {
-        const moveSpeed = 7.5 * delta;
-        const forward = new THREE.Vector3(-Math.sin(camYaw), 0, -Math.cos(camYaw));
-        const right = new THREE.Vector3(Math.cos(camYaw), 0, -Math.sin(camYaw));
-        playerCamPivot.addScaledVector(forward, -mz * moveSpeed);
-        playerCamPivot.addScaledVector(right, mx * moveSpeed);
-      }
-
-      const cx = playerCamPivot.x + camDist * Math.sin(camYaw) * Math.cos(camPitch);
-      const cy = playerCamPivot.y + camDist * Math.sin(camPitch);
-      const cz = playerCamPivot.z + camDist * Math.cos(camYaw) * Math.cos(camPitch);
-
-      camera.position.set(cx, cy, cz);
-      camera.lookAt(playerCamPivot);
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y = camYaw;
+      camera.rotation.x = camPitch;
     }
 
     // =======================================================
