@@ -130,12 +130,107 @@
       z-index: 5;
       text-align: right;
     }
+    
+    /* MAIN MENU STYLES */
+    #main-menu {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: linear-gradient(135deg, rgba(11,16,27,0.95), rgba(15,23,42,0.98));
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+    #main-menu h1 {
+      font-size: 32px;
+      color: #38bdf8;
+      margin-bottom: 10px;
+      text-shadow: 0 4px 20px rgba(56,189,248,0.4);
+    }
+    #main-menu p {
+      color: #94a3b8;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+    .grid-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .option-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .option-card:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: #38bdf8;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+    }
+    .option-card h2 {
+      font-size: 18px;
+      color: #e2e8f0;
+    }
+    .option-card span {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .color-picker {
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(30, 41, 59, 0.8);
+      padding: 15px 25px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .color-picker label {
+      font-size: 16px;
+      font-weight: bold;
+      color: #e2e8f0;
+    }
+    .color-picker input[type="color"] {
+      width: 50px;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: none;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-  <div id="hud">
+  <div id="main-menu">
+    <h1>🏗️ Engenharia & Obra Autônoma</h1>
+    <p>Selecione o projeto que a equipe irá construir</p>
+    
+    <div class="color-picker" style="margin-bottom: 20px; margin-top: 0;">
+      <label for="paint-color">Cor da Pintura Externa:</label>
+      <input type="color" id="paint-color" value="#e2e8f0">
+    </div>
+
+    <div class="grid-options" id="menu-options">
+      <!-- Injetado via JS -->
+    </div>
+  </div>
+
+  <div id="hud" style="display: none;">
     <h1>🏗️ Engenharia & Obra Autônoma</h1>
     <div>Tijolos no Estoque: <span id="val-estoque" class="hud-tag">10.000</span></div>
     <div>Peças Instaladas: <b id="val-assentados">0</b> | Cortes Precisos: <b id="val-cortes">0</b></div>
@@ -290,7 +385,7 @@
     const DOOR_MAIN = { x: -0.75, z: 3.0 };
     const DOOR_INT  = { x: 1.5,   z: 0.0 };
 
-    function generateRigidArchitecture() {
+    function generateRigidArchitecture(floors = 1, paintColor = null) {
       const layers = 36;
       const doorH = 30;
       const winMin = 13;
@@ -301,53 +396,73 @@
       const openEast  = [[-0.7, 0.7]];
       const openDiv   = [[-0.45, 0.45]];
 
-      for (let l = 0; l < layers; l++) {
-        const y = l * TIJOLO_A + TIJOLO_A / 2;
-        const even = (l % 2 === 0);
+      for (let f = 0; f < floors; f++) {
+        for (let l = 0; l < layers; l++) {
+          const y = (f * layers + l) * TIJOLO_A + TIJOLO_A / 2;
+          const even = (l % 2 === 0);
 
-        // Fix for perfect corner interlocking (Zipper effect without gaps)
-        const outerX_min = -3.0 - TIJOLO_P / 2;
-        const outerX_max =  6.0 + TIJOLO_P / 2;
-        const innerX_min = -3.0 + TIJOLO_P / 2;
-        const innerX_max =  6.0 - TIJOLO_P / 2;
+          // Fix for perfect corner interlocking (Zipper effect without gaps)
+          const outerX_min = -3.0 - TIJOLO_P / 2;
+          const outerX_max =  6.0 + TIJOLO_P / 2;
+          const innerX_min = -3.0 + TIJOLO_P / 2;
+          const innerX_max =  6.0 - TIJOLO_P / 2;
 
-        const outerZ_min = -3.0 - TIJOLO_P / 2;
-        const outerZ_max =  3.0 + TIJOLO_P / 2;
-        const innerZ_min = -3.0 + TIJOLO_P / 2;
-        const innerZ_max =  3.0 - TIJOLO_P / 2;
+          const outerZ_min = -3.0 - TIJOLO_P / 2;
+          const outerZ_max =  3.0 + TIJOLO_P / 2;
+          const innerZ_min = -3.0 + TIJOLO_P / 2;
+          const innerZ_max =  3.0 - TIJOLO_P / 2;
 
-        const xMin = even ? outerX_min : innerX_min;
-        const xMax = even ? outerX_max : innerX_max;
-        const zMin = even ? innerZ_min : outerZ_min;
-        const zMax = even ? innerZ_max : outerZ_max;
+          const xMin = even ? outerX_min : innerX_min;
+          const xMax = even ? outerX_max : innerX_max;
+          const zMin = even ? innerZ_min : outerZ_min;
+          const zMax = even ? innerZ_max : outerZ_max;
 
-        const xWallOpeningsNorth = (l >= winMin && l < winMax) ? [...openNorth] : [];
-        const xWallOpeningsSouth = [];
-        if (l < doorH) xWallOpeningsSouth.push([...openSouth[0]]);
-        if (l >= winMin && l < winMax) xWallOpeningsSouth.push([...openSouth[1]]);
+          const xWallOpeningsNorth = (l >= winMin && l < winMax) ? [...openNorth] : [];
+          const xWallOpeningsSouth = [];
+          
+          if (f === 0 && l < doorH) xWallOpeningsSouth.push([...openSouth[0]]);
+          else if (f > 0 && l >= winMin && l < winMax) xWallOpeningsSouth.push([...openSouth[0]]); // Janela no lugar da porta
+          
+          if (l >= winMin && l < winMax) xWallOpeningsSouth.push([...openSouth[1]]);
 
-        if (!even) {
-          xWallOpeningsNorth.push([1.5 - TIJOLO_P / 2, 1.5 + TIJOLO_P / 2]);
-          xWallOpeningsSouth.push([1.5 - TIJOLO_P / 2, 1.5 + TIJOLO_P / 2]);
+          if (!even) {
+            xWallOpeningsNorth.push([1.5 - TIJOLO_P / 2, 1.5 + TIJOLO_P / 2]);
+            xWallOpeningsSouth.push([1.5 - TIJOLO_P / 2, 1.5 + TIJOLO_P / 2]);
+          }
+
+          buildWallLine(xMin, xMax, -3.0, y, 'X', xWallOpeningsNorth, true);
+          buildWallLine(xMin, xMax, 3.0, y, 'X', xWallOpeningsSouth, true);
+
+          buildWallLine(zMin, zMax, -3.0, y, 'Z', [], true);
+          buildWallLine(zMin, zMax, 6.0, y, 'Z', (l >= winMin && l < winMax) ? openEast : [], true);
+          
+          const divZMin = even ? (-3.0 + TIJOLO_P / 2) : (-3.0 - TIJOLO_P / 2);
+          const divZMax = even ? (3.0 - TIJOLO_P / 2)  : (3.0 + TIJOLO_P / 2);
+          buildWallLine(divZMin, divZMax, 1.5, y, 'Z', (l < doorH) ? openDiv : [], false);
         }
-
-        buildWallLine(xMin, xMax, -3.0, y, 'X', xWallOpeningsNorth);
-        buildWallLine(xMin, xMax, 3.0, y, 'X', xWallOpeningsSouth);
-
-        buildWallLine(zMin, zMax, -3.0, y, 'Z', []);
-        buildWallLine(zMin, zMax, 6.0, y, 'Z', (l >= winMin && l < winMax) ? openEast : []);
-        
-        const divZMin = even ? (-3.0 + TIJOLO_P / 2) : (-3.0 - TIJOLO_P / 2);
-        const divZMax = even ? (3.0 - TIJOLO_P / 2)  : (3.0 + TIJOLO_P / 2);
-        buildWallLine(divZMin, divZMax, 1.5, y, 'Z', (l < doorH) ? openDiv : []);
       }
 
-      addWoodFrames();
-      addLadders();
-      buildTriangularGables(layers);
-      buildRealisticRoofStructure(layers);
-      buildFloorAndGrout();
-      addDoorsAndWindows();
+      for (let f = 0; f < floors; f++) {
+        addWoodFrames(f * layers * TIJOLO_A);
+        buildFloorAndGrout(f === 0 ? 0.01 : f * layers * TIJOLO_A, f);
+        addDoorsAndWindows(f * layers * TIJOLO_A, f);
+      }
+      
+      addLadders(floors);
+      buildTriangularGables(floors * layers);
+      buildRealisticRoofStructure(floors * layers);
+
+      // Pintura Externa
+      if (paintColor) {
+        for (let x = -3.5; x <= 6.5; x += 1.5) {
+           blueprint.push({ type: 'PAINT', x: x, y: 0, z: 3.5, color: paintColor, sortY: 20.0, claimed: false });
+           blueprint.push({ type: 'PAINT', x: x, y: 0, z: -3.5, color: paintColor, sortY: 20.0, claimed: false });
+        }
+        for (let z = -3.5; z <= 3.5; z += 1.5) {
+           blueprint.push({ type: 'PAINT', x: -3.5, y: 0, z: z, color: paintColor, sortY: 20.0, claimed: false });
+           blueprint.push({ type: 'PAINT', x: 6.5, y: 0, z: z, color: paintColor, sortY: 20.0, claimed: false });
+        }
+      }
 
       blueprint.sort((a, b) => (a.sortY !== undefined ? a.sortY : a.y) - (b.sortY !== undefined ? b.sortY : b.y));
 
@@ -361,18 +476,20 @@
       stockFloor = initialFloor;
     }
 
-    function addLadders() {
+    function addLadders(floors) {
       const lZ = 3.3; 
-      const rotX = -0.25; 
-      blueprint.push({ type: 'LADDER', x: -2.0, y: 1.9, sortY: 5.0, z: lZ, len: 0.5, h: 3.8, rot: {x: rotX}, claimed: false, ladderId: 1 });
-      blueprint.push({ type: 'LADDER', x: 0.5,  y: 1.9, sortY: 5.0, z: lZ, len: 0.5, h: 3.8, rot: {x: rotX}, claimed: false, ladderId: 2 });
-      blueprint.push({ type: 'LADDER', x: 4.5,  y: 1.9, sortY: 5.0, z: lZ, len: 0.5, h: 3.8, rot: {x: rotX}, claimed: false, ladderId: 3 });
+      const rotX = -0.25;
+      const h = 3.8 * floors;
+      const y = h / 2;
+      blueprint.push({ type: 'LADDER', x: -2.0, y: y, sortY: 5.0, z: lZ, len: 0.5, h: h, rot: {x: rotX}, claimed: false, ladderId: 1 });
+      blueprint.push({ type: 'LADDER', x: 0.5,  y: y, sortY: 5.0, z: lZ, len: 0.5, h: h, rot: {x: rotX}, claimed: false, ladderId: 2 });
+      blueprint.push({ type: 'LADDER', x: 4.5,  y: y, sortY: 5.0, z: lZ, len: 0.5, h: h, rot: {x: rotX}, claimed: false, ladderId: 3 });
       
       const lZn = -3.3;
       const rotXn = 0.25;
-      blueprint.push({ type: 'LADDER', x: -2.0, y: 1.9, sortY: 5.0, z: lZn, len: 0.5, h: 3.8, rot: {x: rotXn}, claimed: false, ladderId: 4 });
-      blueprint.push({ type: 'LADDER', x: 0.5,  y: 1.9, sortY: 5.0, z: lZn, len: 0.5, h: 3.8, rot: {x: rotXn}, claimed: false, ladderId: 5 });
-      blueprint.push({ type: 'LADDER', x: 4.5,  y: 1.9, sortY: 5.0, z: lZn, len: 0.5, h: 3.8, rot: {x: rotXn}, claimed: false, ladderId: 6 });
+      blueprint.push({ type: 'LADDER', x: -2.0, y: y, sortY: 5.0, z: lZn, len: 0.5, h: h, rot: {x: rotXn}, claimed: false, ladderId: 4 });
+      blueprint.push({ type: 'LADDER', x: 0.5,  y: y, sortY: 5.0, z: lZn, len: 0.5, h: h, rot: {x: rotXn}, claimed: false, ladderId: 5 });
+      blueprint.push({ type: 'LADDER', x: 4.5,  y: y, sortY: 5.0, z: lZn, len: 0.5, h: h, rot: {x: rotXn}, claimed: false, ladderId: 6 });
 
       blueprint.push({ type: 'REMOVE_LADDER', x: -2.0, y: 0, sortY: 8.0, z: lZ, claimed: false, ladderId: 1 });
       blueprint.push({ type: 'REMOVE_LADDER', x: 0.5,  y: 0, sortY: 8.0, z: lZ, claimed: false, ladderId: 2 });
@@ -382,37 +499,44 @@
       blueprint.push({ type: 'REMOVE_LADDER', x: 4.5,  y: 0, sortY: 8.0, z: lZn, claimed: false, ladderId: 6 });
     }
 
-    function addDoorsAndWindows() {
+    function addDoorsAndWindows(offsetY = 0, floorIndex = 0) {
       // Windows
       blueprint.push({
-        type: 'WINDOW', x: -1.1, y: 0.91 + 1.19/2, sortY: 4.0, z: -3.0,
+        type: 'WINDOW', x: -1.1, y: offsetY + 0.91 + 1.19/2, sortY: 4.0, z: -3.0,
         len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
       });
       blueprint.push({
-        type: 'WINDOW', x: 3.7, y: 0.91 + 1.19/2, sortY: 4.0, z: -3.0,
+        type: 'WINDOW', x: 3.7, y: offsetY + 0.91 + 1.19/2, sortY: 4.0, z: -3.0,
         len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
       });
       blueprint.push({
-        type: 'WINDOW', x: 3.7, y: 0.91 + 1.19/2, sortY: 4.0, z: 3.0,
+        type: 'WINDOW', x: 3.7, y: offsetY + 0.91 + 1.19/2, sortY: 4.0, z: 3.0,
         len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
       });
       blueprint.push({
-        type: 'WINDOW', x: 6.0, y: 0.91 + 1.19/2, sortY: 4.0, z: 0.0,
+        type: 'WINDOW', x: 6.0, y: offsetY + 0.91 + 1.19/2, sortY: 4.0, z: 0.0,
         len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
       });
 
-      // Doors
-      blueprint.push({
-        type: 'DOOR', x: -0.75, y: 2.10/2, sortY: 4.1, z: 3.0,
-        len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
-      });
-      blueprint.push({
-        type: 'DOOR', x: 1.5, y: 2.10/2, sortY: 4.1, z: 0.0,
-        len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
-      });
+      // Doors or Windows depending on floor
+      if (floorIndex === 0) {
+        blueprint.push({
+          type: 'DOOR', x: -0.75, y: offsetY + 2.10/2, sortY: 4.1, z: 3.0,
+          len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
+        });
+        blueprint.push({
+          type: 'DOOR', x: 1.5, y: offsetY + 2.10/2, sortY: 4.1, z: 0.0,
+          len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
+        });
+      } else {
+        blueprint.push({
+          type: 'WINDOW', x: -0.75, y: offsetY + 0.91 + 1.19/2, sortY: 4.1, z: 3.0,
+          len: 0.9, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
+        });
+      }
     }
 
-    function buildWallLine(start, end, fixed, y, axis, openings) {
+    function buildWallLine(start, end, fixed, y, axis, openings, isExt = false) {
       let cur = start;
       while (cur < end) {
         let nextBlock = end;
@@ -452,6 +576,7 @@
           w: TIJOLO_P,
           rot: { x: 0, y: axis === 'Z' ? Math.PI / 2 : 0, z: 0 },
           isCut: isCut,
+          isExternal: isExt,
           claimed: false
         });
 
@@ -459,14 +584,14 @@
       }
     }
 
-    function addWoodFrames() {
+    function addWoodFrames(offsetY = 0) {
       const frames = [
-        { x: -1.2, z: 3.0, w: 0.06, h: 2.10, d: TIJOLO_P, y: 1.05 },
-        { x: -0.3, z: 3.0, w: 0.06, h: 2.10, d: TIJOLO_P, y: 1.05 },
-        { x: -0.75, z: 3.0, w: 0.96, h: 0.06, d: TIJOLO_P, y: 2.10 },
-        { x: 1.5, z: -0.45, w: TIJOLO_P, h: 2.10, d: 0.06, y: 1.05 },
-        { x: 1.5, z: 0.45,  w: TIJOLO_P, h: 2.10, d: 0.06, y: 1.05 },
-        { x: 1.5, z: 0.0,   w: TIJOLO_P, h: 0.06, d: 0.96, y: 2.10 }
+        { x: -1.2, z: 3.0, w: 0.06, h: 2.10, d: TIJOLO_P, y: offsetY + 1.05 },
+        { x: -0.3, z: 3.0, w: 0.06, h: 2.10, d: TIJOLO_P, y: offsetY + 1.05 },
+        { x: -0.75, z: 3.0, w: 0.96, h: 0.06, d: TIJOLO_P, y: offsetY + 2.10 },
+        { x: 1.5, z: -0.45, w: TIJOLO_P, h: 2.10, d: 0.06, y: offsetY + 1.05 },
+        { x: 1.5, z: 0.45,  w: TIJOLO_P, h: 2.10, d: 0.06, y: offsetY + 1.05 },
+        { x: 1.5, z: 0.0,   w: TIJOLO_P, h: 0.06, d: 0.96, y: offsetY + 2.10 }
       ];
 
       frames.forEach(f => {
@@ -612,7 +737,7 @@
       }
     }
 
-    function buildFloorAndGrout() {
+    function buildFloorAndGrout(floorY = 0.01) {
       const TILE_SIZE = 0.60;
       const GAP = 0.005;
       const STEP = TILE_SIZE + GAP;
@@ -717,7 +842,8 @@
     // 5. NAVEGAÇÃO E WAYPOINTS
     // =======================================================
     function isWallImpassable() {
-      return placedPartsCount > 120;
+      // 400 tijolos = aprox 6-7 fileiras de altura (altura do joelho)
+      return placedPartsCount > 400;
     }
 
     function resolvePathWaypoints(fromPos, destPos) {
@@ -730,31 +856,33 @@
       const isOutside = (p) => !insideRoom1(p) && !insideRoom2(p);
 
       const fromOut = isOutside(fromPos);
+      const fromR1 = insideRoom1(fromPos);
+      const fromR2 = insideRoom2(fromPos);
+      
+      const destOut = isOutside(destPos);
       const destR1 = insideRoom1(destPos);
       const destR2 = insideRoom2(destPos);
 
-      if (fromOut && (destR1 || destR2)) {
-        const wp1 = new THREE.Vector3(DOOR_MAIN.x, 0, 3.8);
-        const wp2 = new THREE.Vector3(DOOR_MAIN.x, 0, 2.2);
-        if (destR1) return [wp1, wp2, destPos];
-        const wp3 = new THREE.Vector3(DOOR_INT.x - 0.7, 0, DOOR_INT.z);
-        const wp4 = new THREE.Vector3(DOOR_INT.x + 0.7, 0, DOOR_INT.z);
-        return [wp1, wp2, wp3, wp4, destPos];
-      }
+      // Pontos das portas com margens para garantir travessia limpa
+      const wpMainOut = new THREE.Vector3(DOOR_MAIN.x, 0, 3.8);
+      const wpMainIn = new THREE.Vector3(DOOR_MAIN.x, 0, 2.2);
+      
+      const wpIntR1 = new THREE.Vector3(DOOR_INT.x - 0.7, 0, DOOR_INT.z);
+      const wpIntR2 = new THREE.Vector3(DOOR_INT.x + 0.7, 0, DOOR_INT.z);
 
-      if (!fromOut && isOutside(destPos)) {
-        if (insideRoom2(fromPos)) {
-          const wpA = new THREE.Vector3(DOOR_INT.x - 0.7, 0, DOOR_INT.z);
-          const wpB = new THREE.Vector3(DOOR_MAIN.x, 0, 2.2);
-          const wpC = new THREE.Vector3(DOOR_MAIN.x, 0, 3.8);
-          return [wpA, wpB, wpC, destPos];
-        } else {
-          const wpB = new THREE.Vector3(DOOR_MAIN.x, 0, 2.2);
-          const wpC = new THREE.Vector3(DOOR_MAIN.x, 0, 3.8);
-          return [wpB, wpC, destPos];
-        }
-      }
+      // Rotas de Outside para Dentro
+      if (fromOut && destR1) return [wpMainOut, wpMainIn, destPos];
+      if (fromOut && destR2) return [wpMainOut, wpMainIn, wpIntR1, wpIntR2, destPos];
+      
+      // Rotas de R1 para Fora ou R2
+      if (fromR1 && destOut) return [wpMainIn, wpMainOut, destPos];
+      if (fromR1 && destR2) return [wpIntR1, wpIntR2, destPos];
+      
+      // Rotas de R2 para Fora ou R1
+      if (fromR2 && destOut) return [wpIntR2, wpIntR1, wpMainIn, wpMainOut, destPos];
+      if (fromR2 && destR1) return [wpIntR2, wpIntR1, destPos];
 
+      // Se estao na mesma zona (R1->R1, R2->R2, Out->Out)
       return [destPos];
     }
 
@@ -856,6 +984,11 @@
         this.timer += dt;
         this.applyWorkerSeparation();
 
+        if (this.state === 'PLACING' && this.currentTask && this.currentTask.type === 'PAINT') {
+           this.armR.rotation.x = -1.1 + Math.sin(this.timer * 15) * 0.8;
+           this.armL.rotation.x = -0.5;
+        }
+
         if (this.state === 'THINKING') {
           if (this.timer >= 0.15) {
             this.timer = 0;
@@ -880,7 +1013,7 @@
             let stockTarget = palletBricksPos;
             if (task.type === 'WOOD' || task.type === 'LADDER') stockTarget = palletWoodPos;
             else if (task.type === 'ROOF' || task.type === 'RIDGE') stockTarget = palletRoofPos;
-            else if (task.type === 'FLOOR' || task.type === 'GROUT') stockTarget = palletFloorPos;
+            else if (task.type === 'FLOOR' || task.type === 'GROUT' || task.type === 'PAINT') stockTarget = palletFloorPos;
 
             if (task.type === 'REMOVE_LADDER') {
               this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(task.x, 0, task.z));
@@ -1003,11 +1136,13 @@
               this.carriedMesh.scale.set(1.1, 0.4, 1.2);
               stockRoof = Math.max(0, stockRoof - 1);
               roofStackPivot.scale.y = Math.max(0.01, stockRoof / (initialRoof || 1));
-            } else if (this.currentTask.type === 'FLOOR' || this.currentTask.type === 'GROUT') {
-              this.carriedMesh.material = this.currentTask.type === 'FLOOR' ? floorMat : groutMat;
-              this.carriedMesh.scale.set(1.1, 0.1, 1.1);
-              stockFloor = Math.max(0, stockFloor - 1);
-              floorStackPivot.scale.y = Math.max(0.01, stockFloor / (initialFloor || 1));
+            } else if (this.currentTask.type === 'FLOOR' || this.currentTask.type === 'GROUT' || this.currentTask.type === 'PAINT') {
+              this.carriedMesh.material = this.currentTask.type === 'PAINT' ? new THREE.MeshBasicMaterial({color: this.currentTask.color}) : (this.currentTask.type === 'FLOOR' ? floorMat : groutMat);
+              this.carriedMesh.scale.set(this.currentTask.type === 'PAINT' ? 0.4 : 1.1, this.currentTask.type === 'PAINT' ? 0.6 : 0.1, this.currentTask.type === 'PAINT' ? 0.4 : 1.1);
+              if (this.currentTask.type !== 'PAINT') {
+                  stockFloor = Math.max(0, stockFloor - 1);
+                  floorStackPivot.scale.y = Math.max(0.01, stockFloor / (initialFloor || 1));
+              }
             } else {
               if (this.currentTask.isCut) {
                 cutsCount++;
@@ -1041,7 +1176,7 @@
               } else {
                  groundTargetZ = this.currentTask.z >= 0 ? 3.6 : -3.6;
               }
-            } else if (this.currentTask.type === 'FLOOR' || this.currentTask.type === 'GROUT') {
+            } else if (this.currentTask.type === 'FLOOR' || this.currentTask.type === 'GROUT' || this.currentTask.type === 'PAINT') {
               groundTargetX = this.currentTask.x;
               groundTargetZ = this.currentTask.z;
             } else {
@@ -1087,10 +1222,17 @@
           }
         }
         else if (this.state === 'PLACING') {
-          if (this.timer >= 0.2) {
+          const placementTime = this.currentTask.type === 'PAINT' ? 1.5 : 0.2;
+          if (this.timer >= placementTime) {
             this.timer = 0;
             this.carriedMesh.visible = false;
-            spawnInstalledElement(this.currentTask);
+            
+            if (this.currentTask.type === 'PAINT') {
+               applyPaintTask(this.currentTask);
+            } else {
+               spawnInstalledElement(this.currentTask);
+            }
+            
             this.currentTask.completed = true;
 
             // Avança o ponteiro blueprintHead para O(1) sem alterar a array
@@ -1116,9 +1258,12 @@
             } else if (this.currentTask.type === 'LADDER') {
               telhasStatusEl.textContent = "Preparação para Telhado";
               statusEl.textContent = "Posicionando escadas...";
+            } else if (this.currentTask.type === 'PAINT') {
+              telhasStatusEl.textContent = "Acabamento & Pintura";
+              statusEl.textContent = "Pintando a fachada externa...";
             }
 
-            if (this.currentTask.y > 2.5 && this.currentTask.type !== 'LADDER') {
+            if (this.currentTask.y > 2.5 && this.currentTask.type !== 'LADDER' && this.currentTask.type !== 'PAINT') {
                this.state = 'CLIMBING_DOWN';
                this.timer = 0;
             } else {
@@ -1283,8 +1428,6 @@
       }
     }
 
-    initInstancedMeshes();
-
     function spawnInstalledElement(item) {
       if (item.type === 'WINDOW' || item.type === 'DOOR' || item.type === 'LADDER') {
         const group = new THREE.Group();
@@ -1378,11 +1521,33 @@
       inst.mesh.setMatrixAt(inst.count, dummy.matrix);
       inst.mesh.instanceMatrix.needsUpdate = true;
       
+      // Store brick color for painting
+      if (item.type === 'BRICK' || item.type === 'CUT_BRICK') {
+        if (!inst.meta) inst.meta = [];
+        inst.meta[inst.count] = { x: item.x, z: item.z, isExternal: item.isExternal };
+        inst.mesh.setColorAt(inst.count, inst.mat.color);
+        inst.mesh.instanceColor.needsUpdate = true;
+      }
+
       inst.count++;
       inst.mesh.count = inst.count;
     }
 
-    activeBuilders.push(new Builder(BUILDER_PALETTES[0], 0));
+    function applyPaintTask(task) {
+        const paintCol = new THREE.Color(task.color);
+        ['BRICK', 'CUT_BRICK'].forEach(k => {
+           const inst = instances[k];
+           if (inst && inst.meta) {
+              for(let i=0; i<inst.count; i++) {
+                 const m = inst.meta[i];
+                 if (m && m.isExternal && Math.abs(m.x - task.x) < 2.0 && Math.abs(m.z - task.z) < 2.0) {
+                    inst.mesh.setColorAt(i, paintCol);
+                 }
+              }
+              inst.mesh.instanceColor.needsUpdate = true;
+           }
+        });
+    }
 
     // =======================================================
     // 7. HUD, CONTROLES & VELOCIDADES
@@ -1608,7 +1773,53 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    animate();
+    // =======================================================
+    // 10. SETUP INICIAL & MENU
+    // =======================================================
+    const BUILDINGS = [
+      { id: 1, name: "Casa Simples", floors: 1 },
+      { id: 2, name: "Casa Larga", floors: 1 },
+      { id: 3, name: "Sobrado Geminado", floors: 2 },
+      { id: 4, name: "Casa com Sacada", floors: 2 },
+      { id: 5, name: "Prédio Residencial", floors: 3 },
+      { id: 6, name: "Prédio Comercial", floors: 5 },
+      { id: 7, name: "Torre Residencial", floors: 8 },
+      { id: 8, name: "Mansão Moderna", floors: 2 },
+      { id: 9, name: "Galpão Aberto", floors: 1 },
+      { id: 10, name: "Edifício Corporativo", floors: 10 }
+    ];
+
+    function renderMenu() {
+      const menuOptions = document.getElementById('menu-options');
+      BUILDINGS.forEach(b => {
+        const card = document.createElement('div');
+        card.className = 'option-card';
+        card.innerHTML = `
+          <h2>🏗️ ${b.name}</h2>
+          <span>${b.floors} Andar(es) | Arquitetura AAA</span>
+        `;
+        card.addEventListener('click', () => {
+          const colorInput = document.getElementById('paint-color');
+          startSimulation(b.floors, colorInput.value);
+        });
+        menuOptions.appendChild(card);
+      });
+    }
+
+    function startSimulation(floors, paintColor) {
+      document.getElementById('main-menu').style.display = 'none';
+      document.getElementById('hud').style.display = 'block';
+
+      generateRigidArchitecture(floors, paintColor);
+      initInstancedMeshes();
+      
+      activeBuilders.push(new Builder(BUILDER_PALETTES[0], 0));
+
+      animate();
+    }
+
+    // Inicializa o Menu ao carregar
+    renderMenu();
   </script>
 </body>
 </html>
