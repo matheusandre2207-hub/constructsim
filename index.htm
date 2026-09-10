@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
   <title>Canteiro 3D: Construção Realista com Telhado e IA</title>
   <style>
     * {
@@ -11,15 +11,13 @@
       padding: 0;
       user-select: none;
       -webkit-user-select: none;
+      touch-action: none;
     }
     body {
       background: #0b101b;
       overflow: hidden;
       font-family: 'Segoe UI', system-ui, sans-serif;
       color: #fff;
-      touch-action: none;
-      width: 100vw;
-      height: 100vh;
     }
     #canvas-container {
       width: 100vw;
@@ -31,52 +29,50 @@
     }
     #hud {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      top: 12px;
+      left: 12px;
       z-index: 30;
       background: rgba(15, 23, 42, 0.92);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 14px;
-      padding: 12px 16px;
-      font-size: 12px;
-      line-height: 1.4;
+      padding: 14px 18px;
+      font-size: 13px;
+      line-height: 1.5;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      max-width: 320px;
-      pointer-events: auto;
-      touch-action: auto;
+      max-width: 370px;
     }
     #hud h1 {
-      font-size: 14px;
+      font-size: 15px;
       color: #38bdf8;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .hud-tag {
       display: inline-block;
-      padding: 2px 6px;
+      padding: 2px 7px;
       background: #0369a1;
       border-radius: 4px;
       font-weight: bold;
     }
     .hud-buttons {
       display: flex;
-      gap: 6px;
-      margin-top: 8px;
+      gap: 8px;
+      margin-top: 10px;
       flex-wrap: wrap;
     }
     .hud-btn {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       background: linear-gradient(135deg, #0284c7, #0369a1);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 6px 10px;
+      padding: 7px 12px;
       border-radius: 8px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
@@ -94,166 +90,122 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
-
-    /* SENSORES TOUCH E ANALÓGICO */
     .touch-zone {
       position: absolute;
-      top: 0;
       bottom: 0;
       width: 50vw;
-      height: 100vh;
-      z-index: 10;
-      touch-action: none;
+      height: 60vh;
+      z-index: 20;
     }
     #zone-joystick { left: 0; }
     #zone-camera { right: 0; }
-
     #joystick-base {
       position: absolute;
-      width: 100px;
-      height: 100px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(56, 189, 248, 0.4);
+      width: 110px;
+      height: 110px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       pointer-events: none;
       display: none;
       transform: translate(-50%, -50%);
-      z-index: 20;
     }
     #joystick-thumb {
       position: absolute;
-      width: 44px;
-      height: 44px;
+      width: 46px;
+      height: 46px;
       background: #38bdf8;
       border-radius: 50%;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.8);
-      pointer-events: none;
+      box-shadow: 0 0 15px #38bdf8;
     }
-
-    /* CONTROLES DE ALTURA TOUCH (SUBIR / DESCER) */
-    #vertical-controls {
-      position: absolute;
-      right: 15px;
-      bottom: 90px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      z-index: 25;
-    }
-    .btn-fly {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1.5px solid rgba(56, 189, 248, 0.6);
-      color: #38bdf8;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      touch-action: none;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    }
-    .btn-fly:active {
-      background: rgba(56, 189, 248, 0.4);
-      color: #fff;
-    }
-
     #camera-hint {
       position: absolute;
-      right: 14px;
-      bottom: 14px;
+      right: 16px;
+      bottom: 16px;
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.5);
-      z-index: 25;
+      color: rgba(255, 255, 255, 0.45);
+      z-index: 5;
       text-align: right;
-      pointer-events: none;
     }
     
-    /* MENU COM ROLAGEM TOUCH NATIVA */
+    /* MAIN MENU STYLES */
     #main-menu {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: linear-gradient(135deg, rgba(11,16,27,0.96), rgba(15,23,42,0.98));
+      background: linear-gradient(135deg, rgba(11,16,27,0.95), rgba(15,23,42,0.98));
       backdrop-filter: blur(20px);
       z-index: 100;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 16px 80px 16px;
+      justify-content: flex-start;
+      padding: 40px 20px;
       overflow-y: auto;
-      overflow-x: hidden;
-      touch-action: pan-y !important;
-      -webkit-overflow-scrolling: touch;
     }
     #main-menu h1 {
-      font-size: 26px;
+      font-size: 32px;
       color: #38bdf8;
-      margin-bottom: 6px;
-      text-align: center;
+      margin-bottom: 10px;
       text-shadow: 0 4px 20px rgba(56,189,248,0.4);
     }
     #main-menu p {
       color: #94a3b8;
-      margin-bottom: 20px;
-      font-size: 14px;
-      text-align: center;
+      margin-bottom: 30px;
+      font-size: 16px;
     }
     .grid-options {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
       width: 100%;
-      max-width: 1000px;
-      touch-action: pan-y !important;
+      max-width: 1200px;
     }
     .option-card {
-      background: rgba(30, 41, 59, 0.7);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 16px;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
       cursor: pointer;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      touch-action: auto;
+      gap: 10px;
     }
-    .option-card:active {
-      transform: scale(0.98);
+    .option-card:hover {
+      background: rgba(56, 189, 248, 0.1);
       border-color: #38bdf8;
-      background: rgba(56, 189, 248, 0.15);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
     }
     .option-card h2 {
-      font-size: 16px;
+      font-size: 18px;
       color: #e2e8f0;
     }
     .option-card span {
-      font-size: 12px;
+      font-size: 13px;
       color: #94a3b8;
     }
     .color-picker {
-      margin-bottom: 20px;
+      margin-top: 30px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      background: rgba(30, 41, 59, 0.85);
-      padding: 10px 18px;
+      gap: 15px;
+      background: rgba(30, 41, 59, 0.8);
+      padding: 15px 25px;
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .color-picker label {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: bold;
       color: #e2e8f0;
     }
     .color-picker input[type="color"] {
-      width: 44px;
-      height: 36px;
+      width: 50px;
+      height: 40px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
@@ -264,27 +216,27 @@
 </head>
 <body>
 
-  <!-- MENU PRINCIPAL COM SCROLL TOUCH -->
   <div id="main-menu">
     <h1>🏗️ Engenharia & Obra Autônoma</h1>
-    <p>Selecione um projeto para construir</p>
+    <p>Selecione o projeto que a equipe irá construir</p>
     
-    <div class="color-picker">
+    <div class="color-picker" style="margin-bottom: 20px; margin-top: 0;">
       <label for="paint-color">Cor da Pintura Externa:</label>
       <input type="color" id="paint-color" value="#e2e8f0">
     </div>
 
-    <div class="grid-options" id="menu-options"></div>
+    <div class="grid-options" id="menu-options">
+      <!-- Injetado via JS -->
+    </div>
   </div>
 
-  <!-- HUD STATUS -->
   <div id="hud" style="display: none;">
     <h1>🏗️ Engenharia & Obra Autônoma</h1>
     <div>Tijolos no Estoque: <span id="val-estoque" class="hud-tag">10.000</span></div>
     <div>Peças Instaladas: <b id="val-assentados">0</b> | Cortes Precisos: <b id="val-cortes">0</b></div>
     <div>Estrutura & Telhado: <span id="val-telhas" style="color: #f97316;">Em andamento</span></div>
     <div style="margin-top: 3px;">Equipe Ativa: <b id="val-equipe" style="color: #38bdf8;">1 / 5</b></div>
-    <div style="margin-top: 2px; color: #94a3b8; font-size: 11px;">Etapa: <span id="val-status" style="color: #38bdf8;">Alvenaria e Amarração</span></div>
+    <div style="margin-top: 2px; color: #94a3b8; font-size: 12px;">Etapa: <span id="val-status" style="color: #38bdf8;">Alvenaria e Amarração</span></div>
     
     <div class="hud-buttons">
       <button id="speed-btn" class="hud-btn" type="button">⏩ Velocidade: <span id="val-speed">1x</span></button>
@@ -292,28 +244,13 @@
     </div>
   </div>
 
-  <!-- SENSORES TOUCH LADO ESQUERDO E DIREITO -->
-  <div id="zone-joystick" class="touch-zone"></div>
-  <div id="zone-camera" class="touch-zone"></div>
-
-  <!-- ANALÓGICO VIRTUAL ESQUERDO -->
-  <div id="joystick-base">
-    <div id="joystick-thumb"></div>
-  </div>
-
-  <!-- CONTROLES VERTICAIS MOBILE -->
-  <div id="vertical-controls" style="display: none;">
-    <div class="btn-fly" id="btn-up">▲</div>
-    <div class="btn-fly" id="btn-down">▼</div>
-  </div>
-
-  <div id="camera-hint">Touch: Esq = Andar | Dir = Câmera 360°<br>PC: WASD + Mouse | Espaço / Shift</div>
+  <div id="camera-hint">Mouse para girar câmera<br>WASD para andar | Space/Shift para subir/descer</div>
 
   <div id="canvas-container"></div>
 
   <script>
     // =======================================================
-    // 1. THREE.JS ENGINE & CENÁRIO
+    // 1. CENÁRIO E THREE.JS ENGINE
     // =======================================================
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
@@ -321,9 +258,7 @@
     scene.fog = new THREE.FogExp2('#0b101b', 0.015);
 
     const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 14);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.shadowMap.enabled = true;
@@ -374,13 +309,14 @@
     const floorMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.1, metalness: 0.05 });
     const groutMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.9 });
     const glassMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, transparent: true, opacity: 0.5, roughness: 0.1 });
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
     const doorWoodMat = new THREE.MeshStandardMaterial({ color: 0x4a3018, roughness: 0.9 });
 
     const interactables = [];
     const spawnedLadders = {};
 
     // =======================================================
-    // 3. ESTOQUES
+    // 3. ESTOQUES: PILHAS QUE DIMINUEM DE CIMA PARA BAIXO
     // =======================================================
     let stockBricks = 10000;
     const initialBricks = 10000;
@@ -391,15 +327,17 @@
     let initialFloor = 0;
     let stockFloor = 0;
 
-    const palletBricksPos = new THREE.Vector3(-7.5, 0, 4.5);
-    const palletWoodPos   = new THREE.Vector3(-7.5, 0, 1.0);
-    const palletRoofPos   = new THREE.Vector3(-7.5, 0, -2.5);
-    const palletFloorPos  = new THREE.Vector3(-7.5, 0, -6.0);
+    let palletBricksPos = new THREE.Vector3(-7.5, 0, 4.5);
+    let palletWoodPos   = new THREE.Vector3(-7.5, 0, 1.0);
+    let palletRoofPos   = new THREE.Vector3(-7.5, 0, -2.5);
+    let palletFloorPos  = new THREE.Vector3(-7.5, 0, -6.0);
 
     const PALLET_H = 0.15;
     const STACK_BRICK_H = 2.0;
     const STACK_WOOD_H  = 1.4;
     const STACK_ROOF_H  = 1.6;
+
+    let brickStackPivot, woodStackPivot, roofStackPivot, floorStackPivot;
 
     function createStockPallet(pos, color, boxSize) {
       const pallet = new THREE.Mesh(
@@ -410,10 +348,12 @@
       pallet.receiveShadow = true;
       scene.add(pallet);
 
+      // Pivot ancorado no topo da madeira do palete para diminuir de cima para baixo
       const pivot = new THREE.Group();
       pivot.position.set(pos.x, PALLET_H, pos.z);
       scene.add(pivot);
 
+      // Geometria transladada em Y para que a base fique em y=0 local
       const geo = new THREE.BoxGeometry(boxSize.x, boxSize.y, boxSize.z);
       geo.translate(0, boxSize.y / 2, 0);
 
@@ -424,18 +364,13 @@
       return pivot;
     }
 
-    const brickStackPivot = createStockPallet(palletBricksPos, 0xb45309, new THREE.Vector3(2.0, STACK_BRICK_H, 2.0));
-    const woodStackPivot  = createStockPallet(palletWoodPos,   0x854d0e, new THREE.Vector3(1.8, STACK_WOOD_H, 1.8));
-    const roofStackPivot  = createStockPallet(palletRoofPos,   0xc2410c, new THREE.Vector3(1.8, STACK_ROOF_H, 1.8));
-    const floorStackPivot = createStockPallet(palletFloorPos,  0xe2e8f0, new THREE.Vector3(1.8, 1.0, 1.8));
-
     // =======================================================
-    // 4. PLANTA BAIXA & GERADOR DE ESTRUTURA
+    // 4. PLANTA BAIXA: AMARRAÇÕES, VÃOS, OITÕES E TELHADO
     // =======================================================
     const blueprint = [];
     let cutsCount = 0;
     let placedPartsCount = 0;
-    let blueprintHead = 0;
+    let blueprintHead = 0; // Otimização O(1) para evitar splice em alta velocidade
 
     const DOOR_MAIN = { x: -0.75, z: 3.0 };
     const DOOR_INT  = { x: 1.5,   z: 0.0 };
@@ -460,14 +395,27 @@
       }
     }
 
-    function generateRigidArchitecture(floors = 1, paintColor = null) {
+    function generateRigidArchitecture(building, paintColor = null) {
+      const floors = building.floors || 1;
+      const lay = building.layout || { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0, divX: [1.5], divZ: [] };
+      window.currentLayout = lay; // Store layout for buildFloorAndGrout and other functions
+      window.currentRoof = building.roof || 'gable';
+
       const layers = 36;
       const doorH = 30;
       const winMin = 13;
       const winMax = 30;
 
-      const openNorth = [[-1.8, -0.4], [3.0, 4.4]];
-      const openSouth = [[-1.2, -0.3], [3.0, 4.4]];
+      const openNorth = [[-1.8, -0.4]]; // Default door
+      const openSouth = [[-1.2, -0.3]]; // Default main door
+      
+      // Dynamic windows
+      for(let x = lay.minX + 2.0; x < lay.maxX - 1.0; x += 3.5) {
+         if (x > -1.0 && x < 2.0) continue;
+         openNorth.push([x - 0.7, x + 0.7]);
+         openSouth.push([x - 0.7, x + 0.7]);
+      }
+
       const openEast  = [[-0.7, 0.7]];
       const openDiv   = [[-0.45, 0.45]];
 
@@ -480,20 +428,10 @@
           const y = offsetY + l * TIJOLO_A + TIJOLO_A / 2;
           const even = (l % 2 === 0);
 
-          const outerX_min = -3.0 - TIJOLO_P / 2;
-          const outerX_max =  6.0 + TIJOLO_P / 2;
-          const innerX_min = -3.0 + TIJOLO_P / 2;
-          const innerX_max =  6.0 - TIJOLO_P / 2;
-
-          const outerZ_min = -3.0 - TIJOLO_P / 2;
-          const outerZ_max =  3.0 + TIJOLO_P / 2;
-          const innerZ_min = -3.0 + TIJOLO_P / 2;
-          const innerZ_max =  3.0 - TIJOLO_P / 2;
-
-          const xMin = even ? outerX_min : innerX_min;
-          const xMax = even ? outerX_max : innerX_max;
-          const zMin = even ? innerZ_min : outerZ_min;
-          const zMax = even ? innerZ_max : outerZ_max;
+          const xMin = even ? lay.minX - TIJOLO_P/2 : lay.minX + TIJOLO_P/2;
+          const xMax = even ? lay.maxX + TIJOLO_P/2 : lay.maxX - TIJOLO_P/2;
+          const zMin = even ? lay.minZ + TIJOLO_P/2 : lay.minZ - TIJOLO_P/2;
+          const zMax = even ? lay.maxZ - TIJOLO_P/2 : lay.maxZ + TIJOLO_P/2;
 
           const xWallOpeningsNorth = (l >= winMin && l < winMax) ? [...openNorth] : [];
           const xWallOpeningsSouth = [];
@@ -501,25 +439,39 @@
           if (f === 0 && l < doorH) xWallOpeningsSouth.push([...openSouth[0]]);
           else if (f > 0 && l >= winMin && l < winMax) xWallOpeningsSouth.push([...openSouth[0]]);
           
-          if (l >= winMin && l < winMax) xWallOpeningsSouth.push([...openSouth[1]]);
-
-          if (!even) {
-            xWallOpeningsNorth.push([1.5 - TIJOLO_P / 2, 1.5 + TIJOLO_P / 2]);
-            xWallOpeningsSouth.push([1.5 - TIJOLO_P / 2, 1.5 + TIJOLO_P / 2]);
+          if (l >= winMin && l < winMax) {
+            for(let i = 1; i < openSouth.length; i++) xWallOpeningsSouth.push([...openSouth[i]]);
           }
 
-          buildWallLine(xMin, xMax, -3.0, y, 'X', xWallOpeningsNorth, true);
-          buildWallLine(xMin, xMax, 3.0, y, 'X', xWallOpeningsSouth, true);
+          if (!even) {
+            lay.divX.forEach(dx => {
+               xWallOpeningsNorth.push([dx - TIJOLO_P / 2, dx + TIJOLO_P / 2]);
+               xWallOpeningsSouth.push([dx - TIJOLO_P / 2, dx + TIJOLO_P / 2]);
+            });
+            lay.divZ.forEach(dz => {
+               // Internal Z walls don't touch X walls directly at their center unless they cross
+            });
+          }
 
-          buildWallLine(zMin, zMax, -3.0, y, 'Z', [], true);
-          buildWallLine(zMin, zMax, 6.0, y, 'Z', (l >= winMin && l < winMax) ? openEast : [], true);
+          buildWallLine(xMin, xMax, lay.minZ, y, 'X', xWallOpeningsNorth, true);
+          buildWallLine(xMin, xMax, lay.maxZ, y, 'X', xWallOpeningsSouth, true);
+
+          buildWallLine(zMin, zMax, lay.minX, y, 'Z', [], true);
+          buildWallLine(zMin, zMax, lay.maxX, y, 'Z', (l >= winMin && l < winMax) ? openEast : [], true);
+          lay.divX.forEach(dx => {
+              const dxMin = even ? (lay.minZ + TIJOLO_P / 2) : (lay.minZ - TIJOLO_P / 2);
+              const dxMax = even ? (lay.maxZ - TIJOLO_P / 2) : (lay.maxZ + TIJOLO_P / 2);
+              buildWallLine(dxMin, dxMax, dx, y, 'Z', (l < doorH) ? openDiv : [], false);
+          });
           
-          const divZMin = even ? (-3.0 + TIJOLO_P / 2) : (-3.0 - TIJOLO_P / 2);
-          const divZMax = even ? (3.0 - TIJOLO_P / 2)  : (3.0 + TIJOLO_P / 2);
-          buildWallLine(divZMin, divZMax, 1.5, y, 'Z', (l < doorH) ? openDiv : [], false);
+          lay.divZ.forEach(dz => {
+              const dzMin = even ? (lay.minX - TIJOLO_P / 2) : (lay.minX + TIJOLO_P / 2);
+              const dzMax = even ? (lay.maxX + TIJOLO_P / 2) : (lay.maxX - TIJOLO_P / 2);
+              buildWallLine(dzMin, dzMax, dz, y, 'X', [], false);
+          });
         }
 
-        addWoodFrames(offsetY, f);
+        addWoodFrames(offsetY, f, lay);
         buildFloorAndGrout(f === 0 ? 0.01 : offsetY, f);
         addDoorsAndWindows(offsetY, f);
         
@@ -541,8 +493,29 @@
       const roofSortBase = floors * 1000;
       const roofStartIndex = blueprint.length;
       
-      buildTriangularGables(totalLayers);
-      buildRealisticRoofStructure(totalLayers);
+      if (window.currentRoof === 'flat') {
+         // Laje de cobertura (flat roof)
+         buildFloorAndGrout(totalLayers * TIJOLO_A, floors);
+         
+         // Build a tiny parapet (platibanda) for flat roofs
+         const yBase = totalLayers * TIJOLO_A;
+         for (let pl = 0; pl < 4; pl++) {
+            const py = yBase + pl * TIJOLO_A + TIJOLO_A / 2;
+            const even = (pl % 2 === 0);
+            const pXMin = even ? lay.minX - TIJOLO_P/2 : lay.minX + TIJOLO_P/2;
+            const pXMax = even ? lay.maxX + TIJOLO_P/2 : lay.maxX - TIJOLO_P/2;
+            const pZMin = even ? lay.minZ + TIJOLO_P/2 : lay.minZ - TIJOLO_P/2;
+            const pZMax = even ? lay.maxZ - TIJOLO_P/2 : lay.maxZ + TIJOLO_P/2;
+            
+            buildWallLine(pXMin, pXMax, lay.minZ, py, 'X', [], true);
+            buildWallLine(pXMin, pXMax, lay.maxZ, py, 'X', [], true);
+            buildWallLine(pZMin, pZMax, lay.minX, py, 'Z', [], true);
+            buildWallLine(pZMin, pZMax, lay.maxX, py, 'Z', [], true);
+         }
+      } else {
+         buildTriangularGables(totalLayers);
+         buildRealisticRoofStructure(totalLayers);
+      }
 
       for (let i = roofStartIndex; i < blueprint.length; i++) {
          if (blueprint[i].sortY !== undefined) blueprint[i].sortY += roofSortBase;
@@ -553,13 +526,13 @@
       if (paintColor) {
         for (let f = 0; f <= floors; f++) {
           const paintSortBase = (floors + 1) * 1000 + f;
-          for (let x = -3.5; x <= 6.5; x += 1.5) {
-             blueprint.push({ type: 'PAINT', x: x, y: 0, z: 3.5, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
-             blueprint.push({ type: 'PAINT', x: x, y: 0, z: -3.5, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
+          for (let x = lay.minX - 0.5; x <= lay.maxX + 0.5; x += 1.5) {
+             blueprint.push({ type: 'PAINT', x: x, y: 0, z: lay.maxZ + 0.5, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
+             blueprint.push({ type: 'PAINT', x: x, y: 0, z: lay.minZ - 0.5, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
           }
-          for (let z = -3.5; z <= 3.5; z += 1.5) {
-             blueprint.push({ type: 'PAINT', x: -3.5, y: 0, z: z, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
-             blueprint.push({ type: 'PAINT', x: 6.5, y: 0, z: z, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
+          for (let z = lay.minZ - 0.5; z <= lay.maxZ + 0.5; z += 1.5) {
+             blueprint.push({ type: 'PAINT', x: lay.minX - 0.5, y: 0, z: z, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
+             blueprint.push({ type: 'PAINT', x: lay.maxX + 0.5, y: 0, z: z, color: paintColor, sortY: paintSortBase, floorIndex: f, claimed: false });
           }
         }
       }
@@ -576,40 +549,101 @@
       stockFloor = initialFloor;
     }
 
-    function addDoorsAndWindows(offsetY = 0, floorIndex = 0) {
-      blueprint.push({
-        type: 'WINDOW', x: -1.1, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.0, z: -3.0,
-        len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
-      });
-      blueprint.push({
-        type: 'WINDOW', x: 3.7, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.0, z: -3.0,
-        len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
-      });
-      blueprint.push({
-        type: 'WINDOW', x: 3.7, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.0, z: 3.0,
-        len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
-      });
-      blueprint.push({
-        type: 'WINDOW', x: 6.0, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.0, z: 0.0,
-        len: 1.4, h: 1.19, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
-      });
-
-      blueprint.push({
-        type: 'DOOR', x: 1.5, y: offsetY + 2.10/2, sortY: offsetY + 4.1, z: 0.0,
-        len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
-      });
-
+    function addWoodFrames(offsetY, floorIndex = 0, lay) {
+      if (!lay) lay = window.currentLayout;
+      
+      // Main doors
       if (floorIndex === 0) {
         blueprint.push({
-          type: 'DOOR', x: -0.75, y: offsetY + 2.10/2, sortY: offsetY + 4.1, z: 3.0,
-          len: 0.9, h: 2.10, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
+          type: 'WOOD', x: -0.75, y: offsetY + 1.05, sortY: offsetY + 1.05, z: lay.maxZ,
+          len: 0.9, h: 2.1, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
+        });
+        blueprint.push({
+          type: 'WOOD', x: -1.1, y: offsetY + 1.05, sortY: offsetY + 1.05, z: lay.minZ,
+          len: 1.4, h: 2.1, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
         });
       } else {
         blueprint.push({
-          type: 'WINDOW', x: -0.75, y: offsetY + 0.91 + 1.19/2, sortY: offsetY + 4.1, z: 3.0,
-          len: 0.9, h: 1.19, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
+          type: 'WOOD', x: -0.75, y: offsetY + 1.05, sortY: offsetY + 1.05, z: lay.maxZ,
+          len: 0.9, h: 2.1, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
         });
       }
+      
+      // Internal doors for divX
+      lay.divX.forEach(dx => {
+          blueprint.push({
+            type: 'WOOD', x: dx, y: offsetY + 1.05, sortY: offsetY + 1.05, z: 0,
+            len: 0.9, h: 2.1, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
+          });
+      });
+
+      // Windows
+      for(let x = lay.minX + 2.0; x < lay.maxX - 1.0; x += 3.5) {
+         if (x > -1.0 && x < 2.0) continue;
+         blueprint.push({
+           type: 'WOOD', x: x, y: offsetY + 1.5, sortY: offsetY + 1.5, z: lay.maxZ,
+           len: 1.4, h: 1.2, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
+         });
+         blueprint.push({
+           type: 'WOOD', x: x, y: offsetY + 1.5, sortY: offsetY + 1.5, z: lay.minZ,
+           len: 1.4, h: 1.2, w: TIJOLO_P, rot: {x:0, y:0, z:0}, claimed: false
+         });
+      }
+
+      blueprint.push({
+        type: 'WOOD', x: lay.maxX, y: offsetY + 1.5, sortY: offsetY + 1.5, z: 0,
+        len: 1.4, h: 1.2, w: TIJOLO_P, rot: {x:0, y:Math.PI/2, z:0}, claimed: false
+      });
+    }
+
+    function addDoorsAndWindows(offsetY, floorIndex = 0) {
+      const lay = window.currentLayout;
+      if (floorIndex === 0) {
+        blueprint.push({
+          type: 'DOOR', x: -0.75, y: offsetY + 1.05, z: lay.maxZ,
+          len: 0.8, h: 2.0, w: 0.05, rot: {x:0, y:0, z:0},
+          sortY: offsetY + 4.0, claimed: false
+        });
+        blueprint.push({
+          type: 'DOOR', x: -1.1, y: offsetY + 1.05, z: lay.minZ,
+          len: 1.3, h: 2.0, w: 0.05, rot: {x:0, y:0, z:0},
+          sortY: offsetY + 4.0, claimed: false
+        });
+      } else {
+        blueprint.push({
+          type: 'WINDOW', x: -0.75, y: offsetY + 1.05, z: lay.maxZ,
+          len: 0.8, h: 2.0, w: 0.05, rot: {x:0, y:0, z:0},
+          sortY: offsetY + 4.0, claimed: false
+        });
+      }
+
+      lay.divX.forEach(dx => {
+          blueprint.push({
+            type: 'DOOR', x: dx, y: offsetY + 1.05, z: 0,
+            len: 0.8, h: 2.0, w: 0.05, rot: {x:0, y:Math.PI/2, z:0},
+            sortY: offsetY + 4.0, claimed: false
+          });
+      });
+
+      for(let x = lay.minX + 2.0; x < lay.maxX - 1.0; x += 3.5) {
+         if (x > -1.0 && x < 2.0) continue;
+         blueprint.push({
+           type: 'WINDOW', x: x, y: offsetY + 1.5, z: lay.maxZ,
+           len: 1.3, h: 1.1, w: 0.05, rot: {x:0, y:0, z:0},
+           sortY: offsetY + 4.0, claimed: false
+         });
+         blueprint.push({
+           type: 'WINDOW', x: x, y: offsetY + 1.5, z: lay.minZ,
+           len: 1.3, h: 1.1, w: 0.05, rot: {x:0, y:0, z:0},
+           sortY: offsetY + 4.0, claimed: false
+         });
+      }
+
+      blueprint.push({
+        type: 'WINDOW', x: lay.maxX, y: offsetY + 1.5, z: 0,
+        len: 1.3, h: 1.1, w: 0.05, rot: {x:0, y:Math.PI/2, z:0},
+        sortY: offsetY + 4.0, claimed: false
+      });
     }
 
     function buildWallLine(start, end, fixed, y, axis, openings, isExt = false) {
@@ -690,48 +724,65 @@
     }
 
     function buildTriangularGables(baseLayers) {
-      const gableLayers = 18;
+      const lay = window.currentLayout;
+      const gableLayers = Math.ceil(((lay.maxZ - lay.minZ) / 2) / TIJOLO_P * 1.2); 
+      // Approximate height based on depth
       const baseWallY = baseLayers * TIJOLO_A;
-      const gablePositionsX = [-3.0, 1.5, 6.0];
+      
+      const gablePositionsX = [lay.minX, lay.maxX, ...lay.divX];
+      const maxSpan = (lay.maxZ - lay.minZ) / 2;
 
       for (let gl = 0; gl < gableLayers; gl++) {
         const y = baseWallY + gl * TIJOLO_A + TIJOLO_A / 2;
         const progress = gl / gableLayers;
-        const halfSpan = (3.0 - TIJOLO_P) * (1 - progress);
+        const halfSpan = (maxSpan - TIJOLO_P) * (1 - progress);
 
         if (halfSpan < 0.15) break;
+        
+        const midZ = (lay.maxZ + lay.minZ) / 2;
 
         gablePositionsX.forEach(posX => {
-          buildWallLine(-halfSpan, halfSpan, posX, y, 'Z', [], posX !== 1.5);
+          // Pass isExt = true for the outer walls
+          const isExt = (posX === lay.minX || posX === lay.maxX);
+          // Build wall from midZ - halfSpan to midZ + halfSpan
+          buildWallLine(midZ - halfSpan, midZ + halfSpan, posX, y, 'Z', [], isExt);
         });
       }
     }
 
     function buildRealisticRoofStructure(baseLayers) {
+      const lay = window.currentLayout;
       const baseWallY = baseLayers * TIJOLO_A;
-      const ridgeHeight = 1.35;
-      const roofPeakY = baseWallY + ridgeHeight;
-      const halfWidth = 3.0;
+      
+      const midZ = (lay.maxZ + lay.minZ) / 2;
+      const halfWidth = (lay.maxZ - lay.minZ) / 2;
       const eavesOverhang = 0.35;
       const totalHalfSpan = halfWidth + eavesOverhang;
+      
+      const ridgeHeight = totalHalfSpan * 0.45; // Dynamically scale height based on span
+      const roofPeakY = baseWallY + ridgeHeight;
 
       const pitchAngle = Math.atan2(ridgeHeight, totalHalfSpan);
       const rafterLength = Math.hypot(ridgeHeight, totalHalfSpan);
+      const roofLengthX = (lay.maxX - lay.minX) + 0.8;
+      const roofMidX = (lay.maxX + lay.minX) / 2;
 
+      // Cumeeira principal (Main Ridge Beam)
       blueprint.push({
         type: 'WOOD',
-        x: 1.5, z: 0, y: roofPeakY - 0.05,
+        x: roofMidX, z: midZ, y: roofPeakY - 0.05,
         sortY: 6.0,
-        len: 9.8, h: 0.12, w: 0.12,
+        len: roofLengthX, h: 0.12, w: 0.12,
         rot: { x: 0, y: 0, z: 0 },
         claimed: false
       });
 
-      for (let x = -3.3; x <= 6.3; x += 0.8) {
+      // Caibros (Rafters)
+      for (let x = lay.minX - 0.3; x <= lay.maxX + 0.3; x += 0.8) {
         blueprint.push({
           type: 'WOOD',
           x: x,
-          z: totalHalfSpan / 2,
+          z: midZ + totalHalfSpan / 2,
           y: roofPeakY - (ridgeHeight / 2) + 0.02,
           sortY: 6.0,
           len: 0.08, h: 0.10, w: rafterLength,
@@ -742,7 +793,7 @@
         blueprint.push({
           type: 'WOOD',
           x: x,
-          z: -totalHalfSpan / 2,
+          z: midZ - totalHalfSpan / 2,
           y: roofPeakY - (ridgeHeight / 2) + 0.02,
           sortY: 6.0,
           len: 0.08, h: 0.10, w: rafterLength,
@@ -751,7 +802,8 @@
         });
       }
 
-      const numSlats = 7;
+      // Ripas (Slats)
+      const numSlats = Math.ceil(totalHalfSpan / 0.4);
       for (let s = 1; s <= numSlats; s++) {
         const frac = s / (numSlats + 0.5);
         const zDist = frac * totalHalfSpan;
@@ -759,24 +811,25 @@
 
         blueprint.push({
           type: 'WOOD',
-          x: 1.5, z: zDist, y: roofPeakY - yDrop + 0.06,
+          x: roofMidX, z: midZ + zDist, y: roofPeakY - yDrop + 0.06,
           sortY: 6.1,
-          len: 9.8, h: 0.04, w: 0.06,
+          len: roofLengthX, h: 0.04, w: 0.06,
           rot: { x: pitchAngle, y: 0, z: 0 },
           claimed: false
         });
         blueprint.push({
           type: 'WOOD',
-          x: 1.5, z: -zDist, y: roofPeakY - yDrop + 0.06,
+          x: roofMidX, z: midZ - zDist, y: roofPeakY - yDrop + 0.06,
           sortY: 6.1,
-          len: 9.8, h: 0.04, w: 0.06,
+          len: roofLengthX, h: 0.04, w: 0.06,
           rot: { x: -pitchAngle, y: 0, z: 0 },
           claimed: false
         });
       }
 
+      // Telhas (Roof Tiles)
       const tileStepX = 0.28;
-      const tileRows = 9;
+      const tileRows = Math.ceil(totalHalfSpan / 0.35);
 
       for (let r = 0; r < tileRows; r++) {
         const tFrac = r / (tileRows - 0.7);
@@ -784,11 +837,11 @@
         const yDrop = tFrac * ridgeHeight;
         const tileY = roofPeakY - yDrop + 0.08;
 
-        for (let x = -3.35; x <= 6.35; x += tileStepX) {
+        for (let x = lay.minX - 0.35; x <= lay.maxX + 0.35; x += tileStepX) {
           blueprint.push({
             type: 'ROOF',
             x: x,
-            z: zDist,
+            z: midZ + zDist,
             y: tileY,
             sortY: 7.0 + r * 0.01,
             len: 0.26, h: 0.045, w: 0.46,
@@ -799,7 +852,7 @@
           blueprint.push({
             type: 'ROOF',
             x: x,
-            z: -zDist,
+            z: midZ - zDist,
             y: tileY,
             sortY: 7.0 + r * 0.01,
             len: 0.26, h: 0.045, w: 0.46,
@@ -809,11 +862,12 @@
         }
       }
 
-      for (let x = -3.4; x <= 6.4; x += 0.25) {
+      // Telhas de Cumeeira (Ridge Tiles)
+      for (let x = lay.minX - 0.4; x <= lay.maxX + 0.4; x += 0.25) {
         blueprint.push({
           type: 'RIDGE',
-          x: x, z: 0, y: roofPeakY + 0.09,
-          sortY: 7.1,
+          x: x, z: midZ, y: roofPeakY + 0.12,
+          sortY: 8.0,
           len: 0.28, h: 0.06, w: 0.26,
           rot: { x: 0, y: 0, z: 0 },
           claimed: false
@@ -871,6 +925,7 @@
           }
         }
 
+        // Grouts X
         for (let j = -countZ; j <= countZ; j++) {
           let z_grout_center = Zc + j * STEP + TILE_SIZE / 2 + GAP / 2;
           let z_start = Math.max(minZ, z_grout_center - GAP / 2);
@@ -895,6 +950,7 @@
           }
         }
         
+        // Grouts Z
         for (let i = -countX; i <= countX; i++) {
           let x_grout_center = Xc + i * STEP + TILE_SIZE / 2 + GAP / 2;
           let x_start = Math.max(minX, x_grout_center - GAP / 2);
@@ -923,31 +979,57 @@
       }
 
       const tp2 = TIJOLO_P / 2;
-      fillRoom(-3.0 + tp2, 1.5 - tp2, -3.0 + tp2, 3.0 - tp2, false);
-      fillRoom(1.5 + tp2, 6.0 - tp2, -3.0 + tp2, 3.0 - tp2, floorIndex > 0);
+      const lay = window.currentLayout;
+      
+      // We will create 2 main sections: Room 2 (the stairwell) and everything else (to its left)
+      // Since all our dynamic layouts just expand minX, Room 2 is always X: 1.5 to lay.maxX
+      
+      const divX = 1.5;
+      
+      // Left side (everything from lay.minX to 1.5)
+      if (lay.minX < divX) {
+        fillRoom(lay.minX + tp2, divX - tp2, lay.minZ + tp2, lay.maxZ - tp2, false);
+      }
+      
+      // Right side (Stairwell room from 1.5 to lay.maxX)
+      if (lay.maxX > divX) {
+        fillRoom(divX + tp2, lay.maxX - tp2, lay.minZ + tp2, lay.maxZ - tp2, floorIndex > 0);
+      }
 
+      // Soleiras (Thresholds) para as portas
       blueprint.push({
-        type: 'FLOOR', x: 1.5, y: offsetY, sortY: offsetY - 0.45, z: 0,
+        type: 'FLOOR', x: divX, y: offsetY, sortY: offsetY - 0.45, z: 0,
         len: TIJOLO_P, h: thickness, w: 0.9, rot: { x:0, y:0, z:0 }, claimed: false
       });
       blueprint.push({
-        type: 'FLOOR', x: -0.75, y: offsetY, sortY: offsetY - 0.45, z: 3.0,
+        type: 'FLOOR', x: -0.75, y: offsetY, sortY: offsetY - 0.45, z: lay.maxZ,
         len: 0.9, h: thickness, w: TIJOLO_P, rot: { x:0, y:0, z:0 }, claimed: false
       });
+      if (lay.minZ !== -3.0) {
+        blueprint.push({
+          type: 'FLOOR', x: -1.1, y: offsetY, sortY: offsetY - 0.45, z: lay.minZ,
+          len: 1.4, h: thickness, w: TIJOLO_P, rot: { x:0, y:0, z:0 }, claimed: false
+        });
+      }
     }
 
     // =======================================================
-    // 5. NAVEGAÇÃO & ROTAS
+    // 5. NAVEGAÇÃO E WAYPOINTS
     // =======================================================
     function isWallImpassable() {
+      // 400 tijolos = aprox 6-7 fileiras de altura (altura do joelho)
       return placedPartsCount > 400;
     }
 
     function resolvePathWaypoints(fromPos, destPos) {
-      if (!isWallImpassable()) return [destPos];
+      if (!isWallImpassable()) {
+        return [destPos];
+      }
 
-      const insideRoom1 = (p) => p.x >= -3 && p.x <= 1.5 && p.z >= -3 && p.z <= 3;
-      const insideRoom2 = (p) => p.x > 1.5 && p.x <= 6 && p.z >= -3 && p.z <= 3;
+      const lay = window.currentLayout || { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0 };
+
+      const insideRoom1 = (p) => p.x >= lay.minX && p.x <= 1.5 && p.z >= lay.minZ && p.z <= lay.maxZ;
+      const insideRoom2 = (p) => p.x > 1.5 && p.x <= lay.maxX && p.z >= lay.minZ && p.z <= lay.maxZ;
       const isOutside = (p) => !insideRoom1(p) && !insideRoom2(p);
 
       const fromOut = isOutside(fromPos);
@@ -958,23 +1040,31 @@
       const destR1 = insideRoom1(destPos);
       const destR2 = insideRoom2(destPos);
 
-      const wpMainOut = new THREE.Vector3(DOOR_MAIN.x, 0, 3.8);
-      const wpMainIn = new THREE.Vector3(DOOR_MAIN.x, 0, 2.2);
-      const wpIntR1 = new THREE.Vector3(DOOR_INT.x - 0.7, 0, DOOR_INT.z);
-      const wpIntR2 = new THREE.Vector3(DOOR_INT.x + 0.7, 0, DOOR_INT.z);
+      // Pontos das portas com margens para garantir travessia limpa
+      const wpMainOut = new THREE.Vector3(-0.75, 0, lay.maxZ + 0.8);
+      const wpMainIn = new THREE.Vector3(-0.75, 0, lay.maxZ - 0.8);
+      
+      const wpIntR1 = new THREE.Vector3(1.5 - 0.7, 0, 0);
+      const wpIntR2 = new THREE.Vector3(1.5 + 0.7, 0, 0);
 
+      // Rotas de Outside para Dentro
       if (fromOut && destR1) return [wpMainOut, wpMainIn, destPos];
       if (fromOut && destR2) return [wpMainOut, wpMainIn, wpIntR1, wpIntR2, destPos];
+      
+      // Rotas de R1 para Fora ou R2
       if (fromR1 && destOut) return [wpMainIn, wpMainOut, destPos];
       if (fromR1 && destR2) return [wpIntR1, wpIntR2, destPos];
+      
+      // Rotas de R2 para Fora ou R1
       if (fromR2 && destOut) return [wpIntR2, wpIntR1, wpMainIn, wpMainOut, destPos];
       if (fromR2 && destR1) return [wpIntR2, wpIntR1, destPos];
 
+      // Se estao na mesma zona (R1->R1, R2->R2, Out->Out)
       return [destPos];
     }
 
     // =======================================================
-    // 6. OPERÁRIOS & INTELIGÊNCIA
+    // 6. OPERÁRIOS (SEM OLHOS BRANCOS) & COORDENAÇÃO
     // =======================================================
     const BUILDER_PALETTES = [
       { name: "Azul", main: 0x0284c7, dark: 0x034e7b },
@@ -1014,16 +1104,19 @@
         const mainMat = new THREE.MeshStandardMaterial({ color: this.palette.main, roughness: 0.4 });
         const darkMat = new THREE.MeshStandardMaterial({ color: this.palette.dark, roughness: 0.5 });
 
+        // Tronco
         const torso = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.60, 0.24), mainMat);
         torso.position.y = 1.20;
         torso.castShadow = true;
         this.group.add(torso);
 
+        // Cabeça (Limpa e uniforme, sem globos brancos)
         const head = new THREE.Mesh(new THREE.SphereGeometry(0.14, 16, 16), mainMat);
         head.position.y = 1.65;
         head.castShadow = true;
         this.group.add(head);
 
+        // Pernas
         const legGeo = new THREE.BoxGeometry(0.14, 0.75, 0.14);
         legGeo.translate(0, -0.375, 0);
 
@@ -1037,6 +1130,7 @@
         this.legR.castShadow = true;
         this.group.add(this.legR);
 
+        // Braços
         const armGeo = new THREE.BoxGeometry(0.12, 0.65, 0.12);
         armGeo.translate(0, -0.32, 0);
 
@@ -1239,16 +1333,16 @@
 
             if (this.currentTask.type === 'ROOF' || this.currentTask.type === 'RIDGE') {
               telhasStatusEl.textContent = "Cobertura Cerâmica Alinhada";
-              statusEl.textContent = "Assentando telhas cerâmicas...";
+              statusEl.textContent = "Assentando telhas cerâmicas e cumeeiras...";
             } else if (this.currentTask.type === 'WOOD') {
               telhasStatusEl.textContent = "Estrutura de Madeira";
               statusEl.textContent = "Fixando estruturas/escadas...";
             } else if (this.currentTask.type === 'FLOOR') {
-              telhasStatusEl.textContent = "Piso & Acabamento";
-              statusEl.textContent = "Assentando piso...";
+              telhasStatusEl.textContent = "Piso & Acabamento Final";
+              statusEl.textContent = "Assentando cerâmica (piso branco)...";
             } else if (this.currentTask.type === 'GROUT') {
-              telhasStatusEl.textContent = "Piso & Acabamento";
-              statusEl.textContent = "Aplicando rejunte...";
+              telhasStatusEl.textContent = "Piso & Acabamento Final";
+              statusEl.textContent = "Aplicando rejunte no piso...";
             } else if (this.currentTask.type === 'PAINT') {
               telhasStatusEl.textContent = "Acabamento & Pintura";
               statusEl.textContent = "Pintando a fachada externa...";
@@ -1295,7 +1389,7 @@
             }
           } else {
             this.timer = 1.0; 
-            statusEl.textContent = "Obra finalizada com sucesso!";
+            statusEl.textContent = "Obra finalizada! Equipe verificando detalhes...";
           }
         }
         else if (this.state === 'WANDERING' || this.state === 'WALK_TO_INTERACT') {
@@ -1304,6 +1398,7 @@
               const obj = this.targetInteractable;
               obj.userData.isOpen = !obj.userData.isOpen;
               obj.userData.targetAngle = obj.userData.isOpen ? Math.PI / 2 : 0;
+              statusEl.textContent = `Operário testando as ${obj.userData.type === 'WINDOW' ? 'janelas' : 'portas'}...`;
             }
             this.state = 'IDLE';
             this.timer = 1.0 + Math.random() * 3.0;
@@ -1378,15 +1473,20 @@
     }
 
     // =======================================================
-    // INSTANCED MESHES
+    // OTIMIZAÇÃO DE PERFORMANCE: INSTANCED MESHES
+    // Reduz de +15.000 Draw Calls para apenas 5!
     // =======================================================
     const dummy = new THREE.Object3D();
     let instances = null;
 
     function initInstancedMeshes() {
       instances = {
-        BRICK: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: brickMat },
-        CUT_BRICK: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: cutBrickMat },
+        BRICK_0: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.85 }) },
+        BRICK_1: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: new THREE.MeshStandardMaterial({ color: 0xa14a08, roughness: 0.85 }) },
+        BRICK_2: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: new THREE.MeshStandardMaterial({ color: 0xc85c10, roughness: 0.85 }) },
+        CUT_BRICK_0: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.75 }) },
+        CUT_BRICK_1: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: new THREE.MeshStandardMaterial({ color: 0xc46b05, roughness: 0.75 }) },
+        CUT_BRICK_2: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: new THREE.MeshStandardMaterial({ color: 0xee8307, roughness: 0.75 }) },
         WOOD: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: woodMat },
         ROOF: { count: 0, max: 0, mesh: null, geo: new THREE.BoxGeometry(1, 1, 1), mat: roofTileMat },
         RIDGE: { count: 0, max: 0, mesh: null, geo: new THREE.CylinderGeometry(0.5, 0.5, 1, 12, 1, false, 0, Math.PI), mat: ridgeTileMat },
@@ -1397,6 +1497,10 @@
       blueprint.forEach(item => {
         let key = item.type;
         if (key === 'BRICK' && item.isCut) key = 'CUT_BRICK';
+        if (key === 'BRICK' || key === 'CUT_BRICK') {
+           if (item.varId === undefined) item.varId = Math.floor(Math.random() * 3);
+           key = `${key}_${item.varId}`;
+        }
         if (instances[key]) instances[key].max++;
       });
 
@@ -1404,9 +1508,13 @@
         let inst = instances[key];
         if (inst.max > 0) {
           inst.mesh = new THREE.InstancedMesh(inst.geo, inst.mat, inst.max);
-          inst.mesh.count = 0;
+          inst.mesh.count = 0; // Starts empty
           inst.mesh.castShadow = true;
           inst.mesh.receiveShadow = true;
+          if (key === 'BRICK' || key === 'CUT_BRICK') {
+              inst.mesh.instanceColor = null;
+          }
+          
           scene.add(inst.mesh);
         }
       }
@@ -1480,6 +1588,9 @@
 
       let key = item.type;
       if (key === 'BRICK' && item.isCut) key = 'CUT_BRICK';
+      if (key === 'BRICK' || key === 'CUT_BRICK') {
+          key = `${key}_${item.varId}`;
+      }
       
       let inst = instances[key];
       if (!inst || !inst.mesh) return;
@@ -1504,7 +1615,7 @@
       
       inst.mesh.setMatrixAt(inst.count, dummy.matrix);
       inst.mesh.instanceMatrix.needsUpdate = true;
-      
+      // Store brick data for painting
       if (item.type === 'BRICK' || item.type === 'CUT_BRICK') {
         if (!inst.meta) inst.meta = [];
         inst.meta[inst.count] = { 
@@ -1530,7 +1641,7 @@
       const paintedBricks = [];
       const floorYBase = (task.floorIndex || 0) * 2.52;
       
-      ['BRICK', 'CUT_BRICK'].forEach(k => {
+      ['BRICK_0', 'BRICK_1', 'BRICK_2', 'CUT_BRICK_0', 'CUT_BRICK_1', 'CUT_BRICK_2'].forEach(k => {
          const inst = instances[k];
          if (inst && inst.meta) {
             for(let i=0; i<inst.count; i++) {
@@ -1550,6 +1661,8 @@
       if (paintedBricks.length === 0) return;
       
       const paintInst = new THREE.InstancedMesh(decalGeo, paintMat, paintedBricks.length);
+      const isZWall = (task.z > 2.0 || task.z < -2.0);
+      
       for (let i = 0; i < paintedBricks.length; i++) {
          const b = paintedBricks[i];
          dummy.position.set(b.x, b.y, b.z);
@@ -1562,11 +1675,14 @@
          }
          
          dummy.scale.set(b.len, b.h, 0.015);
+         
          let offset = (b.w / 2) + 0.007;
          
          if (!b.rot || b.rot.y === 0) {
+             // X-wall brick: thickness is along Z
              dummy.position.z += (b.z > 0) ? offset : -offset;
          } else {
+             // Z-wall brick: thickness is along X
              dummy.position.x += (b.x > 0) ? offset : -offset;
          }
          
@@ -1581,7 +1697,7 @@
     }
 
     // =======================================================
-    // 7. HUD & CONFIGURAÇÕES
+    // 7. HUD, CONTROLES & VELOCIDADES
     // =======================================================
     const statusEl = document.getElementById('val-status');
     const estoqueEl = document.getElementById('val-estoque');
@@ -1600,14 +1716,15 @@
         const worker = new Builder(BUILDER_PALETTES[nextIdx], nextIdx);
         activeBuilders.push(worker);
         equipeEl.textContent = `${activeBuilders.length} / 5`;
-        statusEl.textContent = `Operário ${BUILDER_PALETTES[nextIdx].name} adicionado!`;
+        statusEl.textContent = `Operário ${BUILDER_PALETTES[nextIdx].name} integrado ao time!`;
 
         if (activeBuilders.length >= 5) {
           addWorkerBtn.disabled = true;
-          addWorkerBtn.textContent = 'Equipe Máxima (5)';
+          addWorkerBtn.textContent = 'Equipe Completa (5)';
         }
       }
     });
+    addWorkerBtn.addEventListener('touchstart', e => e.stopPropagation());
 
     const speedLevels = [1, 2, 5, 10, 20, 30, 60, 120];
     let speedIdx = 0;
@@ -1619,9 +1736,10 @@
       timeSpeed = speedLevels[speedIdx];
       speedValEl.textContent = `${timeSpeed}x`;
     });
+    speedBtn.addEventListener('touchstart', e => e.stopPropagation());
 
     // =======================================================
-    // 8. CONTROLES: TOUCH SENSORS (ESQUERDO / DIREITO) & TECLADO
+    // 8. CONTROLES FREE FLY 360° (WASD + Space/Shift)
     // =======================================================
     let camYaw = 0.35;
     let camPitch = 0.45;
@@ -1632,7 +1750,7 @@
 
     let isMouseDown = false;
     window.addEventListener('mousedown', e => {
-      if (e.target.closest('#hud') || e.target.closest('#main-menu') || e.target.closest('#vertical-controls')) return;
+      if (e.target.closest('#hud') || e.target.closest('#main-menu')) return;
       isMouseDown = true;
     });
     window.addEventListener('mouseup', () => isMouseDown = false);
@@ -1644,135 +1762,12 @@
       }
     });
 
-    // SISTEMA TOUCH MOBILE AVANÇADO
-    let touchJoystickId = null;
-    let touchCameraId = null;
-    let joyOrigin = { x: 0, y: 0 };
-    let joyInput = { x: 0, y: 0 };
-    let lastTouchCam = { x: 0, y: 0 };
-
-    const joyBase = document.getElementById('joystick-base');
-    const joyThumb = document.getElementById('joystick-thumb');
-    const joyZone = document.getElementById('zone-joystick');
-    const camZone = document.getElementById('zone-camera');
-
-    // SENSOR LADO ESQUERDO: ANALÓGICO VIRTUAL DINÂMICO
-    joyZone.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        if (touchJoystickId === null) {
-          touchJoystickId = t.identifier;
-          joyOrigin = { x: t.clientX, y: t.clientY };
-          joyInput = { x: 0, y: 0 };
-
-          joyBase.style.left = `${joyOrigin.x}px`;
-          joyBase.style.top = `${joyOrigin.y}px`;
-          joyBase.style.display = 'block';
-          joyThumb.style.transform = `translate(-50%, -50%)`;
-          break;
-        }
-      }
-    }, { passive: false });
-
-    joyZone.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        if (t.identifier === touchJoystickId) {
-          const dx = t.clientX - joyOrigin.x;
-          const dy = t.clientY - joyOrigin.y;
-          const maxRadius = 50;
-          const dist = Math.hypot(dx, dy);
-          const angle = Math.atan2(dy, dx);
-          const clampedDist = Math.min(dist, maxRadius);
-
-          const thumbX = Math.cos(angle) * clampedDist;
-          const thumbY = Math.sin(angle) * clampedDist;
-
-          joyThumb.style.transform = `translate(calc(-50% + ${thumbX}px), calc(-50% + ${thumbY}px))`;
-
-          joyInput.x = thumbX / maxRadius;
-          joyInput.y = thumbY / maxRadius;
-          break;
-        }
-      }
-    }, { passive: false });
-
-    const endJoystick = (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === touchJoystickId) {
-          touchJoystickId = null;
-          joyInput = { x: 0, y: 0 };
-          joyBase.style.display = 'none';
-          break;
-        }
-      }
-    };
-    joyZone.addEventListener('touchend', endJoystick);
-    joyZone.addEventListener('touchcancel', endJoystick);
-
-    // SENSOR LADO DIREITO: DESLIZE 360° LIVRE
-    camZone.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        if (touchCameraId === null) {
-          touchCameraId = t.identifier;
-          lastTouchCam = { x: t.clientX, y: t.clientY };
-          break;
-        }
-      }
-    }, { passive: false });
-
-    camZone.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        if (t.identifier === touchCameraId) {
-          const dx = t.clientX - lastTouchCam.x;
-          const dy = t.clientY - lastTouchCam.y;
-          lastTouchCam = { x: t.clientX, y: t.clientY };
-
-          camYaw -= dx * 0.007;
-          camPitch -= dy * 0.007;
-          camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
-          break;
-        }
-      }
-    }, { passive: false });
-
-    const endCameraTouch = (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === touchCameraId) {
-          touchCameraId = null;
-          break;
-        }
-      }
-    };
-    camZone.addEventListener('touchend', endCameraTouch);
-    camZone.addEventListener('touchcancel', endCameraTouch);
-
-    // BOTÕES MOBILE VERTICAIS (SUBIR / DESCER)
-    let moveUp = false;
-    let moveDown = false;
-    const btnUp = document.getElementById('btn-up');
-    const btnDown = document.getElementById('btn-down');
-
-    btnUp.addEventListener('touchstart', (e) => { e.stopPropagation(); moveUp = true; });
-    btnUp.addEventListener('touchend', (e) => { e.stopPropagation(); moveUp = false; });
-    btnDown.addEventListener('touchstart', (e) => { e.stopPropagation(); moveDown = true; });
-    btnDown.addEventListener('touchend', (e) => { e.stopPropagation(); moveDown = false; });
-
     function updateCameraAndControls(dt) {
-      const baseSpeed = 12.0;
-      const moveSpeed = (keys['shift'] ? baseSpeed * 2 : baseSpeed) * dt;
-
+      const moveSpeed = (keys['shift'] ? 25.0 : 12.0) * dt;
       const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
       const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
       const up = new THREE.Vector3(0, 1, 0);
 
-      // Teclado
       if (keys['w']) camera.position.addScaledVector(forward, moveSpeed);
       if (keys['s']) camera.position.addScaledVector(forward, -moveSpeed);
       if (keys['a']) camera.position.addScaledVector(right, -moveSpeed);
@@ -1780,23 +1775,13 @@
       if (keys[' ']) camera.position.addScaledVector(up, moveSpeed);
       if (keys['shift']) camera.position.addScaledVector(up, -moveSpeed);
 
-      // Analógico Touch Esquerdo
-      if (joyInput.x !== 0 || joyInput.y !== 0) {
-        camera.position.addScaledVector(forward, -joyInput.y * moveSpeed);
-        camera.position.addScaledVector(right, joyInput.x * moveSpeed);
-      }
-
-      // Botões Up / Down Mobile
-      if (moveUp) camera.position.addScaledVector(up, moveSpeed);
-      if (moveDown) camera.position.addScaledVector(up, -moveSpeed);
-
       camera.rotation.order = 'YXZ';
       camera.rotation.y = camYaw;
       camera.rotation.x = camPitch;
     }
 
     // =======================================================
-    // 9. LOOP PRINCIPAL
+    // 9. LOOP PRINCIPAL ULTRA FLUIDO
     // =======================================================
     const clock = new THREE.Clock();
 
@@ -1804,6 +1789,7 @@
       requestAnimationFrame(animate);
       const rawDelta = Math.min(clock.getDelta(), 0.05);
 
+      // Sub-stepping com teto de iterações para não estrangular a CPU a 60x/120x
       const totalSimTime = rawDelta * timeSpeed;
       const steps = Math.min(Math.ceil(totalSimTime / 0.035), 24);
       const subDt = totalSimTime / steps;
@@ -1848,19 +1834,19 @@
     });
 
     // =======================================================
-    // 10. SETUP DO MENU COM ROLAGEM TOUCH
+    // 10. SETUP INICIAL & MENU
     // =======================================================
     const BUILDINGS = [
-      { id: 1, name: "Casa Simples", floors: 1 },
-      { id: 2, name: "Casa Larga", floors: 1 },
-      { id: 3, name: "Sobrado Geminado", floors: 2 },
-      { id: 4, name: "Casa com Sacada", floors: 2 },
-      { id: 5, name: "Prédio Residencial", floors: 3 },
-      { id: 6, name: "Prédio Comercial", floors: 5 },
-      { id: 7, name: "Torre Residencial", floors: 8 },
-      { id: 8, name: "Mansão Moderna", floors: 2 },
-      { id: 9, name: "Galpão Aberto", floors: 1 },
-      { id: 10, name: "Edifício Corporativo", floors: 10 }
+      { id: 1, name: "Casa Simples", floors: 1, roof: 'gable', layout: { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0, divX: [1.5], divZ: [] } },
+      { id: 2, name: "Casa Larga", floors: 1, roof: 'flat', layout: { minX: -7.5, maxX: 6.0, minZ: -3.0, maxZ: 3.0, divX: [-3.0, 1.5], divZ: [] } },
+      { id: 3, name: "Sobrado Geminado", floors: 2, roof: 'gable', layout: { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0, divX: [1.5], divZ: [] } },
+      { id: 4, name: "Casa com Espaço Extra", floors: 2, roof: 'flat', layout: { minX: -6.0, maxX: 6.0, minZ: -4.5, maxZ: 3.0, divX: [-1.5, 1.5], divZ: [-0.75] } },
+      { id: 5, name: "Prédio Residencial", floors: 3, roof: 'flat', layout: { minX: -6.0, maxX: 6.0, minZ: -4.5, maxZ: 3.0, divX: [-1.5, 1.5], divZ: [-0.75] } },
+      { id: 6, name: "Prédio Comercial", floors: 5, roof: 'flat', layout: { minX: -6.0, maxX: 6.0, minZ: -4.5, maxZ: 3.0, divX: [1.5], divZ: [] } },
+      { id: 7, name: "Torre Residencial", floors: 8, roof: 'flat', layout: { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0, divX: [1.5], divZ: [] } },
+      { id: 8, name: "Mansão Moderna", floors: 2, roof: 'flat', layout: { minX: -10.5, maxX: 6.0, minZ: -6.0, maxZ: 3.0, divX: [-4.5, -0.0, 1.5], divZ: [-1.5] } },
+      { id: 9, name: "Galpão Aberto", floors: 1, roof: 'gable', layout: { minX: -9.0, maxX: 6.0, minZ: -6.0, maxZ: 3.0, divX: [], divZ: [] } },
+      { id: 10, name: "Edifício Corporativo", floors: 10, roof: 'flat', layout: { minX: -6.0, maxX: 6.0, minZ: -6.0, maxZ: 3.0, divX: [1.5], divZ: [-1.5] } }
     ];
 
     function renderMenu() {
@@ -1870,22 +1856,34 @@
         card.className = 'option-card';
         card.innerHTML = `
           <h2>🏗️ ${b.name}</h2>
-          <span>${b.floors} Andar(es) | Arquitetura AAA</span>
+          <span>${b.floors} Andar(es) | Telhado: ${b.roof === 'flat' ? 'Laje' : 'Cerâmica'}</span>
         `;
         card.addEventListener('click', () => {
           const colorInput = document.getElementById('paint-color');
-          startSimulation(b.floors, colorInput.value);
+          startSimulation(b, colorInput.value);
         });
         menuOptions.appendChild(card);
       });
     }
 
-    function startSimulation(floors, paintColor) {
+    function startSimulation(building, paintColor) {
       document.getElementById('main-menu').style.display = 'none';
       document.getElementById('hud').style.display = 'block';
-      document.getElementById('vertical-controls').style.display = 'flex';
 
-      generateRigidArchitecture(floors, paintColor);
+      generateRigidArchitecture(building, paintColor);
+      
+      const lay = window.currentLayout;
+      const safeX = Math.min(-7.5, lay.minX - 4.5);
+      palletBricksPos.x = safeX;
+      palletWoodPos.x = safeX;
+      palletRoofPos.x = safeX;
+      palletFloorPos.x = safeX;
+
+      brickStackPivot = createStockPallet(palletBricksPos, 0xb45309, new THREE.Vector3(2.0, STACK_BRICK_H, 2.0));
+      woodStackPivot  = createStockPallet(palletWoodPos,   0x854d0e, new THREE.Vector3(1.8, STACK_WOOD_H, 1.8));
+      roofStackPivot  = createStockPallet(palletRoofPos,   0xc2410c, new THREE.Vector3(1.8, STACK_ROOF_H, 1.8));
+      floorStackPivot = createStockPallet(palletFloorPos,  0xe2e8f0, new THREE.Vector3(1.8, 1.0, 1.8));
+
       initInstancedMeshes();
       
       activeBuilders.push(new Builder(BUILDER_PALETTES[0], 0));
@@ -1893,6 +1891,7 @@
       animate();
     }
 
+    // Inicializa o Menu ao carregar
     renderMenu();
   </script>
 </body>
