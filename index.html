@@ -472,29 +472,24 @@
             for(let i = 1; i < openSouth.length; i++) xWallOpeningsSouth.push([...openSouth[i]]);
           }
 
-          if (!even) {
-            lay.divX.forEach(dx => {
-               xWallOpeningsNorth.push([dx - TIJOLO_P / 2, dx + TIJOLO_P / 2]);
-               xWallOpeningsSouth.push([dx - TIJOLO_P / 2, dx + TIJOLO_P / 2]);
-            });
-          }
-
           buildWallLine(xMin, xMax, lay.minZ, y, 'X', xWallOpeningsNorth, true);
           buildWallLine(xMin, xMax, lay.maxZ, y, 'X', xWallOpeningsSouth, true);
 
           buildWallLine(zMin, zMax, lay.minX, y, 'Z', [], true);
           buildWallLine(zMin, zMax, lay.maxX, y, 'Z', (l >= winMin && l < winMax) ? openEast : [], true);
           lay.divX.forEach(dx => {
-              const dxMin = even ? (lay.minZ + TIJOLO_P / 2) : (lay.minZ - TIJOLO_P / 2);
-              const dxMax = even ? (lay.maxZ - TIJOLO_P / 2) : (lay.maxZ + TIJOLO_P / 2);
+              const dxMin = lay.minZ + TIJOLO_P / 2;
+              const dxMax = lay.maxZ - TIJOLO_P / 2;
               buildWallLine(dxMin, dxMax, dx, y, 'Z', (l < doorH) ? openDiv : [], false);
           });
           
-          lay.divZ.forEach(dz => {
-              const dzMin = even ? (lay.minX - TIJOLO_P / 2) : (lay.minX + TIJOLO_P / 2);
-              const dzMax = even ? (lay.maxX + TIJOLO_P / 2) : (lay.maxX - TIJOLO_P / 2);
-              buildWallLine(dzMin, dzMax, dz, y, 'X', (l < doorH) ? openDiv : [], false);
-          });
+          if (lay.divZ) {
+              lay.divZ.forEach(dz => {
+                  const dzMin = lay.minX + TIJOLO_P / 2;
+                  const dzMax = lay.maxX - TIJOLO_P / 2;
+                  buildWallLine(dzMin, dzMax, dz, y, 'X', (l < doorH) ? openDiv : [], false);
+              });
+          }
         }
 
         // Stair dimensions — consistent for holeArea matching
@@ -870,7 +865,10 @@
 
       // 4. Telhas (Roof Tiles)
       const tileStepX = 0.28;
+      const tileW = 0.26;
       const tileRows = Math.ceil(totalHalfSpan / 0.35);
+      const minLimitX = lay.minX - 0.35;
+      const maxLimitX = lay.maxX + 0.35;
 
       for (let r = 0; r < tileRows; r++) {
         const tFrac = r / (tileRows - 0.7);
@@ -878,41 +876,76 @@
         const yDrop = tFrac * ridgeHeight;
         const tileY = roofPeakY - yDrop + 0.08;
 
-        for (let x = lay.minX - 0.35; x <= lay.maxX + 0.35; x += tileStepX) {
+        let curX = minLimitX;
+        while (curX < maxLimitX) {
+          const maxSpan = maxLimitX - curX;
+          let len = tileW;
+          let step = tileStepX;
+          
+          if (maxSpan < tileW) {
+            if (maxSpan < 0.05) break;
+            len = maxSpan;
+            step = maxSpan; // cut tile doesn't need gap after it
+          }
+
+          const centerX = curX + len / 2;
+
           blueprint.push({
             type: 'ROOF',
-            x: x,
+            x: centerX,
             z: midZ + zDist,
             y: tileY,
             sortY: 7.0 + r * 0.01,
-            len: 0.26, h: 0.045, w: 0.46,
+            len: len, h: 0.045, w: 0.46,
             rot: { x: pitchAngle, y: 0, z: 0 },
             claimed: false
           });
 
           blueprint.push({
             type: 'ROOF',
-            x: x,
+            x: centerX,
             z: midZ - zDist,
             y: tileY,
             sortY: 7.0 + r * 0.01,
-            len: 0.26, h: 0.045, w: 0.46,
+            len: len, h: 0.045, w: 0.46,
             rot: { x: -pitchAngle, y: 0, z: 0 },
             claimed: false
           });
+
+          curX += step;
         }
       }
 
       // 5. Telhas de Cumeeira (Ridge Tiles)
-      for (let x = lay.minX - 0.4; x <= lay.maxX + 0.4; x += 0.25) {
+      const ridgeStepX = 0.25;
+      const ridgeW = 0.28;
+      const rMinX = lay.minX - 0.4;
+      const rMaxX = lay.maxX + 0.4;
+      let rCurX = rMinX;
+
+      while (rCurX < rMaxX) {
+        const maxSpan = rMaxX - rCurX;
+        let len = ridgeW;
+        let step = ridgeStepX;
+
+        if (maxSpan < ridgeW) {
+          if (maxSpan < 0.05) break;
+          len = maxSpan;
+          step = maxSpan;
+        }
+
+        const centerX = rCurX + len / 2;
+
         blueprint.push({
           type: 'RIDGE',
-          x: x, z: midZ, y: roofPeakY + 0.12,
+          x: centerX, z: midZ, y: roofPeakY + 0.12,
           sortY: 8.0,
-          len: 0.28, h: 0.06, w: 0.26,
+          len: len, h: 0.06, w: 0.26,
           rot: { x: 0, y: 0, z: 0 },
           claimed: false
         });
+
+        rCurX += step;
       }
     }
 
@@ -1708,11 +1741,29 @@
       
       if (paintedBricks.length === 0) return;
       
-      const paintInst = new THREE.InstancedMesh(decalGeo, paintMat, paintedBricks.length);
+      const lay = window.currentLayout;
       
+      // Calculate how many decals we need (corners get an extra decal for the side face)
+      const decals = [];
       for (let i = 0; i < paintedBricks.length; i++) {
          const b = paintedBricks[i];
+         decals.push({ b, type: 'main' });
+         
+         if (!b.rot || b.rot.y === 0) { // X-wall
+             if (b.x - b.len/2 <= lay.minX + 0.02) decals.push({ b, type: 'left' });
+             if (b.x + b.len/2 >= lay.maxX - 0.02) decals.push({ b, type: 'right' });
+         } else { // Z-wall
+             if (b.z - b.len/2 <= lay.minZ + 0.02) decals.push({ b, type: 'left' });
+             if (b.z + b.len/2 >= lay.maxZ - 0.02) decals.push({ b, type: 'right' });
+         }
+      }
+
+      const paintInst = new THREE.InstancedMesh(decalGeo, paintMat, decals.length);
+      
+      for (let i = 0; i < decals.length; i++) {
+         const { b, type } = decals[i];
          dummy.position.set(b.x, b.y, b.z);
+         
          if (b.rot) {
             dummy.rotation.x = b.rot.x || 0;
             dummy.rotation.y = b.rot.y || 0;
@@ -1721,13 +1772,29 @@
             dummy.rotation.set(0, 0, 0);
          }
          
-         dummy.scale.set(b.len, b.h, 0.015);
-         let offset = (b.w / 2) + 0.007;
+         // slightly larger than brick to avoid gaps (user request img2)
+         dummy.scale.set(b.len + 0.01, b.h + 0.01, 0.015);
          
-         if (!b.rot || b.rot.y === 0) {
-             dummy.position.z += (b.z > 0) ? offset : -offset;
+         if (type === 'main') {
+             let offset = (b.w / 2) + 0.007;
+             if (!b.rot || b.rot.y === 0) {
+                 dummy.position.z += (b.z > 0) ? offset : -offset;
+             } else {
+                 dummy.position.x += (b.x > 0) ? offset : -offset;
+             }
          } else {
-             dummy.position.x += (b.x > 0) ? offset : -offset;
+             // Side decal for corner
+             let sideOffset = (b.len / 2) + 0.007;
+             // Rotate 90 degrees to cover the side
+             dummy.rotation.y += Math.PI / 2;
+             // Scale for the side face (width of brick)
+             dummy.scale.set(b.w + 0.01, b.h + 0.01, 0.015);
+             
+             if (!b.rot || b.rot.y === 0) {
+                 dummy.position.x += (type === 'right') ? sideOffset : -sideOffset;
+             } else {
+                 dummy.position.z += (type === 'right') ? sideOffset : -sideOffset;
+             }
          }
          
          dummy.updateMatrix();
