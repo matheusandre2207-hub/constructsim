@@ -2343,7 +2343,7 @@
       
       window.currentPaintColor = parseInt(paintColor.replace('#', '0x'), 16);
       
-      generateRigidArchitecture(building);
+      generateRigidArchitecture(building, window.currentPaintColor);
       
       document.getElementById('val-equipe').textContent = building.workers + " / 5";
       document.getElementById('val-estoque').textContent = initialBricks.toLocaleString('pt-BR');
