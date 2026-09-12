@@ -164,76 +164,160 @@
     }
     
     #main-menu {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      position: fixed;
+      inset: 0;
       z-index: 100;
-      max-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background: rgba(5, 8, 16, 0.88);
+      backdrop-filter: blur(8px);
       overflow-y: auto;
       touch-action: auto;
     }
-    #main-menu h1 {
-      font-size: 32px;
+    .menu-panel {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 28px 24px 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+    }
+    .menu-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .menu-header-text h1 {
+      font-size: clamp(22px, 4vw, 32px);
       color: #38bdf8;
-      margin-bottom: 10px;
       text-shadow: 0 4px 20px rgba(56,189,248,0.4);
+      margin-bottom: 6px;
     }
-    #main-menu p {
+    .menu-header-text p {
       color: #94a3b8;
-      margin-bottom: 30px;
-      font-size: 16px;
+      font-size: clamp(13px, 2.5vw, 16px);
     }
+    .menu-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .menu-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.15s ease;
+      touch-action: auto;
+    }
+    .menu-btn:active { transform: scale(0.95); }
+    .menu-btn-import {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff;
+      font-size: 22px;
+      box-shadow: 0 2px 12px rgba(22, 163, 74, 0.35);
+    }
+    .menu-btn-import:hover { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .menu-btn-export {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.35);
+      padding: 8px 12px;
+      white-space: nowrap;
+    }
+    .menu-btn-export:hover {
+      background: rgba(56, 189, 248, 0.28);
+    }
+    .menu-btn-delete {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.35);
+      padding: 8px 10px;
+    }
+    .menu-btn-delete:hover { background: rgba(239, 68, 68, 0.22); }
+    #import-file-input { display: none; }
     .grid-options {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
       width: 100%;
-      max-width: 1200px;
+      margin-top: 18px;
     }
     .option-card {
       background: rgba(30, 41, 59, 0.6);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 20px;
-      cursor: pointer;
+      border-radius: 14px;
+      padding: 16px;
       transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
     .option-card:hover {
-      background: rgba(56, 189, 248, 0.1);
-      border-color: #38bdf8;
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.12);
+    }
+    .option-card-main {
+      flex: 1;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .option-card-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255,255,255,0.06);
     }
     .option-card h2 {
-      font-size: 18px;
+      font-size: 16px;
       color: #e2e8f0;
+      line-height: 1.3;
     }
     .option-card span {
-      font-size: 13px;
+      font-size: 12px;
       color: #94a3b8;
     }
+    .option-card .imported-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: bold;
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
     .color-picker {
-      margin-top: 30px;
+      margin-top: 16px;
       display: flex;
       align-items: center;
       gap: 15px;
       background: rgba(30, 41, 59, 0.8);
-      padding: 15px 25px;
+      padding: 12px 18px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.1);
+      flex-wrap: wrap;
     }
     .color-picker label {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: bold;
       color: #e2e8f0;
     }
@@ -245,48 +329,76 @@
       cursor: pointer;
       background: none;
     }
-    
-    @media (max-height: 600px) and (orientation: landscape) {
-      #main-menu {
-        max-width: 320px;
-        top: 5px;
-        right: 5px;
-        bottom: 5px;
-        max-height: none;
-        padding: 10px;
-      }
-      #main-menu h1 {
-        font-size: 20px;
-        margin-bottom: 5px;
-      }
-      #main-menu p {
-        font-size: 12px;
-        margin-bottom: 10px;
-      }
+    .import-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 13px;
+      color: #e2e8f0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .import-toast.show { opacity: 1; }
+    .import-toast.error { border-color: rgba(239,68,68,0.5); color: #fca5a5; }
+    .import-toast.success { border-color: rgba(74,222,128,0.5); color: #86efac; }
+
+    @media (max-width: 768px) {
+      #main-menu { padding: 12px 10px; align-items: flex-start; }
+      .menu-panel { padding: 18px 14px 14px; border-radius: 14px; }
+      .menu-header { flex-direction: column; gap: 12px; }
+      .menu-toolbar { width: 100%; }
+      .menu-btn-import { width: 100%; height: 48px; font-size: 18px; }
       .grid-options {
-        grid-template-columns: 1fr;
-        gap: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
       }
       .option-card {
-        padding: 10px;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+        padding: 12px 14px;
+        gap: 12px;
       }
-      .option-card h2 {
-        font-size: 15px;
+      .option-card-main { gap: 4px; }
+      .option-card-actions {
+        flex-direction: column;
+        border-top: none;
+        padding-top: 0;
+        flex-shrink: 0;
       }
-      .color-picker {
+      .option-card h2 { font-size: 15px; }
+      .menu-btn-export, .menu-btn-delete {
+        padding: 10px 12px;
+        min-width: 44px;
+      }
+      .color-picker { padding: 10px 14px; }
+      .color-picker label { font-size: 14px; }
+    }
+
+    @media (max-height: 600px) and (orientation: landscape) {
+      #main-menu { padding: 8px; }
+      .menu-panel { padding: 12px; }
+      .menu-header-text h1 { font-size: 18px; }
+      .menu-header-text p { font-size: 12px; margin-bottom: 0; }
+      .grid-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 8px;
         margin-top: 10px;
-        padding: 8px 15px;
       }
-      .color-picker label {
-        font-size: 13px;
-      }
-      .color-picker input[type="color"] {
-        height: 30px;
-        width: 40px;
-      }
+      .option-card { padding: 10px; }
+      .option-card h2 { font-size: 14px; }
+      .color-picker { margin-top: 10px; padding: 8px 12px; }
+      .color-picker label { font-size: 13px; }
+      .color-picker input[type="color"] { height: 30px; width: 40px; }
       #hud {
         top: 5px;
         left: 50%;
@@ -311,18 +423,30 @@
 <body>
 
   <div id="main-menu">
-    <h1>🏗️ Engenharia & Obra Autônoma</h1>
-    <p>Selecione o projeto que a equipe irá construir</p>
-    
-    <div class="color-picker" style="margin-bottom: 20px; margin-top: 0;">
-      <label for="paint-color">Cor da Pintura Externa:</label>
-      <input type="color" id="paint-color" value="#e2e8f0">
-    </div>
+    <div class="menu-panel">
+      <div class="menu-header">
+        <div class="menu-header-text">
+          <h1>🏗️ Engenharia & Obra Autônoma</h1>
+          <p>Selecione o projeto que a equipe irá construir</p>
+        </div>
+        <div class="menu-toolbar">
+          <button class="menu-btn menu-btn-import" id="import-btn" type="button" title="Importar estrutura (.txt)">+</button>
+          <input type="file" id="import-file-input" accept=".txt,application/json,text/plain">
+        </div>
+      </div>
 
-    <div class="grid-options" id="menu-options">
-      <!-- Injetado via JS -->
+      <div class="color-picker">
+        <label for="paint-color">Cor da Pintura Externa:</label>
+        <input type="color" id="paint-color" value="#e2e8f0">
+      </div>
+
+      <div class="grid-options" id="menu-options">
+        <!-- Injetado via JS -->
+      </div>
     </div>
   </div>
+
+  <div id="import-toast" class="import-toast"></div>
 
   <div id="hud" style="display: none;">
     <div class="hud-header">
@@ -494,13 +618,29 @@
          pivot.add(stack);
       }
 
-      return pivot;
+      return { pallet, pivot };
+    }
+
+    window.housePalletMeshes = {};
+
+    function storeHousePallets(houseIndex, entries) {
+      window.housePalletMeshes[houseIndex] = entries;
+    }
+
+    function removeHousePallets(houseIndex) {
+      const entries = window.housePalletMeshes[houseIndex];
+      if (!entries || entries.removed) return;
+      entries.forEach(({ pallet, pivot }) => {
+        scene.remove(pallet);
+        scene.remove(pivot);
+      });
+      entries.removed = true;
     }
 
     // =======================================================
     // 4. PLANTA BAIXA & TELHADO ORGÂNICO SOBREPOSTO
     // =======================================================
-    const blueprint = [];
+    let blueprint = [];
     let cutsCount = 0;
     let placedPartsCount = 0;
     let blueprintHead = 0;
@@ -508,37 +648,380 @@
     const DOOR_MAIN = { x: -0.75, z: 3.0 };
     const DOOR_INT  = { x: 1.5,   z: 0.0 };
 
-    function generateRigidArchitecture(building, paintColor = null) {
+    const VALID_WALLS_RECT = ['front', 'back', 'east', 'west', 'divX', 'divZ'];
+    const ROOF_TYPES = ['gable', 'flat', 'hip', 'shed', 'dome', 'conical', 'pyramid'];
+    const GEOMETRY_TYPES = ['rect', 'circle', 'cylinder', 'polygon'];
+    const DOOR_GAP_HALF = 0.45;
+    const WINDOW_GAP_HALF = 0.7;
+    const STAIR_W_DEFAULT = 1.4;
+    const STAIR_D_DEFAULT = 2.2;
+    const STAIR_MARGIN = 0.25;
+
+    function computeDefaultOpenings(lay, floors) {
+      const doors = [];
+      const windows = [];
+      const stairs = [];
+      const divX = lay.divX || [];
+      const divZ = lay.divZ || [];
+
+      for (let f = 0; f < floors; f++) {
+        if (f === 0) {
+          doors.push({ floor: 0, wall: 'front', pos: -0.75 });
+          doors.push({ floor: 0, wall: 'back', pos: -1.1 });
+        } else {
+          windows.push({ floor: f, wall: 'front', pos: -0.75 });
+        }
+        divX.forEach(dx => doors.push({ floor: f, wall: 'divX', pos: dx }));
+        divZ.forEach(dz => doors.push({ floor: f, wall: 'divZ', pos: dz }));
+        for (let x = lay.minX + 2.0; x < lay.maxX - 1.0; x += 3.5) {
+          if (x > -2.5 && x < 2.5) continue;
+          windows.push({ floor: f, wall: 'front', pos: x });
+          windows.push({ floor: f, wall: 'back', pos: x });
+        }
+        windows.push({ floor: f, wall: 'east', pos: 0 });
+      }
+
+      for (let f = 0; f < floors - 1; f++) {
+        const auto = resolveStairBounds({ fromFloor: f }, lay);
+        stairs.push({ fromFloor: f, minX: auto.sMinX, maxX: auto.sMaxX, minZ: auto.sMinZ, maxZ: auto.sMaxZ });
+      }
+      return { doors, windows, stairs };
+    }
+
+    function computeDefaultOpeningsForShape(lay, floors, geometry) {
+      if (geometry?.isPolygon && geometry.vertices?.length >= 3) {
+        const doors = [], windows = [], stairs = [];
+        for (let f = 0; f < floors; f++) {
+          doors.push({ floor: f, wall: 'edge0', pos: 0.6 });
+          for (let ei = 1; ei < geometry.vertices.length; ei += 2) {
+            windows.push({ floor: f, wall: 'edge' + ei, pos: 1.0 });
+          }
+        }
+        for (let f = 0; f < floors - 1; f++) {
+          const b = resolveStairBounds({ fromFloor: f }, lay);
+          stairs.push({ fromFloor: f, minX: b.sMinX, maxX: b.sMaxX, minZ: b.sMinZ, maxZ: b.sMaxZ });
+        }
+        return { doors, windows, stairs };
+      }
+      return computeDefaultOpenings(lay, floors);
+    }
+
+    function resolveStairBounds(stair, lay) {
+      if ([stair.minX, stair.maxX, stair.minZ, stair.maxZ].every(v => typeof v === 'number')) {
+        return { sMinX: stair.minX, sMaxX: stair.maxX, sMinZ: stair.minZ, sMaxZ: stair.maxZ };
+      }
+      const w = stair.width || STAIR_W_DEFAULT;
+      const d = stair.depth || STAIR_D_DEFAULT;
+      if (typeof stair.x === 'number' && typeof stair.z === 'number') {
+        return {
+          sMinX: stair.x - w / 2, sMaxX: stair.x + w / 2,
+          sMinZ: stair.z - d / 2, sMaxZ: stair.z + d / 2
+        };
+      }
+      const f = stair.fromFloor || 0;
+      let sMinX, sMaxX;
+      if (f % 2 !== 0 && lay.maxX - lay.minX > 5.0) {
+        sMinX = lay.minX + 0.3;
+        sMaxX = lay.minX + 0.3 + STAIR_W_DEFAULT;
+      } else {
+        sMinX = lay.maxX - 0.3 - STAIR_W_DEFAULT;
+        sMaxX = lay.maxX - 0.3;
+      }
+      const sMinZ = lay.maxZ - 0.6 - STAIR_D_DEFAULT;
+      const sMaxZ = lay.maxZ - 0.6;
+      return { sMinX, sMaxX, sMinZ, sMaxZ };
+    }
+
+    function itemToGap(item, isDoor) {
+      const half = isDoor ? DOOR_GAP_HALF : WINDOW_GAP_HALF;
+      return [item.pos - half, item.pos + half];
+    }
+
+    function getOpeningsForWall(openings, floor, wall, layer, doorH, winMin, winMax) {
+      const gaps = [];
+      const isDoorLayer = layer < doorH;
+      const isWinLayer = layer >= winMin && layer < winMax;
+      openings.doors.filter(d => d.floor === floor && d.wall === wall).forEach(d => {
+        if (isDoorLayer) gaps.push(itemToGap(d, true));
+      });
+      openings.windows.filter(w => w.floor === floor && w.wall === wall).forEach(w => {
+        if (isWinLayer) gaps.push(itemToGap(w, false));
+      });
+      return gaps;
+    }
+
+    function getDoorWorldPos(door, lay) {
+      if (door.wall.startsWith('edge')) {
+        const ep = getEdgePos(door.wall, door.pos, window.currentGeometry);
+        if (ep) return ep;
+      }
+      switch (door.wall) {
+        case 'front': return { x: door.pos, z: lay.maxZ, isZWall: false };
+        case 'back':  return { x: door.pos, z: lay.minZ, isZWall: false };
+        case 'east':  return { x: lay.maxX, z: door.pos, isZWall: true };
+        case 'west':  return { x: lay.minX, z: door.pos, isZWall: true };
+        case 'divX':  return { x: door.pos, z: 0, isZWall: true };
+        case 'divZ':  return { x: 0, z: door.pos, isZWall: false };
+        default: return { x: door.pos, z: lay.maxZ, isZWall: false };
+      }
+    }
+
+    function getWindowWorldPos(win, lay) {
+      return getDoorWorldPos(win, lay);
+    }
+
+    function parseColor(val, fallback) {
+      if (val === undefined || val === null) return fallback;
+      if (typeof val === 'number') return val;
+      if (typeof val === 'string') return parseInt(val.replace('#', ''), 16);
+      return fallback;
+    }
+
+    function computeDefaultRoofConfig(roofLegacy) {
+      const t = roofLegacy || 'gable';
+      return {
+        type: t === 'flat' ? 'flat' : (ROOF_TYPES.includes(t) ? t : 'gable'),
+        pitch: 0.45,
+        overhang: 0.35,
+        rotation: 0,
+        lengthScale: 1.0,
+        widthScale: 1.0,
+        offsetY: 0,
+        colors: { tile: 0xc2410c, ridge: 0x9a3412, wood: 0x854d0e }
+      };
+    }
+
+    function validateRoofConfig(data, roofLegacy) {
+      const base = computeDefaultRoofConfig(data?.type || roofLegacy || 'gable');
+      if (!data) return base;
+      if (data.type && ROOF_TYPES.includes(data.type)) base.type = data.type;
+      if (typeof data.pitch === 'number') base.pitch = Math.max(0.05, Math.min(1.5, data.pitch));
+      if (typeof data.pitchDegrees === 'number') base.pitch = Math.tan(Math.max(5, Math.min(75, data.pitchDegrees)) * Math.PI / 180);
+      if (typeof data.overhang === 'number') base.overhang = data.overhang;
+      if (typeof data.rotation === 'number') base.rotation = data.rotation;
+      if (typeof data.lengthScale === 'number') base.lengthScale = data.lengthScale;
+      if (typeof data.widthScale === 'number') base.widthScale = data.widthScale;
+      if (typeof data.offsetY === 'number') base.offsetY = data.offsetY;
+      if (data.colors) {
+        if (data.colors.tile) base.colors.tile = parseColor(data.colors.tile, base.colors.tile);
+        if (data.colors.ridge) base.colors.ridge = parseColor(data.colors.ridge, base.colors.ridge);
+        if (data.colors.wood) base.colors.wood = parseColor(data.colors.wood, base.colors.wood);
+      }
+      return base;
+    }
+
+    function rotatePoint2D(x, z, cx, cz, deg) {
+      const r = deg * Math.PI / 180;
+      const dx = x - cx, dz = z - cz;
+      return { x: cx + dx * Math.cos(r) - dz * Math.sin(r), z: cz + dx * Math.sin(r) + dz * Math.cos(r) };
+    }
+
+    function resolveGeometry(building) {
+      const lay = building.layout;
+      const geo = building.geometry || {};
+      const type = geo.type || 'rect';
+
+      if (type === 'circle' || type === 'cylinder') {
+        const cx = geo.center?.x ?? (lay.minX + lay.maxX) / 2;
+        const cz = geo.center?.z ?? (lay.minZ + lay.maxZ) / 2;
+        const radius = geo.radius ?? Math.min(lay.maxX - lay.minX, lay.maxZ - lay.minZ) / 2;
+        const sides = Math.max(6, Math.min(32, geo.sides || geo.segments || 16));
+        const rotOff = geo.rotation || 0;
+        const vertices = [];
+        for (let i = 0; i < sides; i++) {
+          const ang = (i / sides) * Math.PI * 2 + (rotOff * Math.PI / 180);
+          vertices.push({ x: cx + Math.cos(ang) * radius, z: cz + Math.sin(ang) * radius });
+        }
+        return { type, vertices, isPolygon: true, sides, center: { x: cx, z: cz }, radius, rotation: rotOff };
+      }
+
+      if (type === 'polygon' && Array.isArray(geo.vertices) && geo.vertices.length >= 3) {
+        let vertices = geo.vertices.map(v => ({ x: v.x, z: v.z }));
+        const cx = vertices.reduce((s, v) => s + v.x, 0) / vertices.length;
+        const cz = vertices.reduce((s, v) => s + v.z, 0) / vertices.length;
+        if (geo.rotation) vertices = vertices.map(v => rotatePoint2D(v.x, v.z, cx, cz, geo.rotation));
+        return { type: 'polygon', vertices, isPolygon: true, center: { x: cx, z: cz }, rotation: geo.rotation || 0 };
+      }
+
+      if (geo.rotation) {
+        const cx = (lay.minX + lay.maxX) / 2;
+        const cz = (lay.minZ + lay.maxZ) / 2;
+        const corners = [
+          { x: lay.minX, z: lay.minZ }, { x: lay.maxX, z: lay.minZ },
+          { x: lay.maxX, z: lay.maxZ }, { x: lay.minX, z: lay.maxZ }
+        ].map(v => rotatePoint2D(v.x, v.z, cx, cz, geo.rotation));
+        return { type: 'rect', vertices: corners, isPolygon: true, rotation: geo.rotation };
+      }
+
+      return { type: 'rect', isPolygon: false, rotation: 0 };
+    }
+
+    function getPolygonCentroid(vertices) {
+      let x = 0, z = 0;
+      vertices.forEach(v => { x += v.x; z += v.z; });
+      return { x: x / vertices.length, z: z / vertices.length };
+    }
+
+    function computeRoofBounds(lay, geometry, roofConfig) {
+      let points;
+      if (geometry?.isPolygon && geometry.vertices?.length >= 3) {
+        points = geometry.vertices;
+      } else {
+        points = [
+          { x: lay.minX, z: lay.minZ }, { x: lay.maxX, z: lay.minZ },
+          { x: lay.maxX, z: lay.maxZ }, { x: lay.minX, z: lay.maxZ }
+        ];
+      }
+      const cx = points.reduce((s, p) => s + p.x, 0) / points.length;
+      const cz = points.reduce((s, p) => s + p.z, 0) / points.length;
+      const rotRad = roofConfig.rotation * Math.PI / 180;
+      const cos = Math.cos(-rotRad), sin = Math.sin(-rotRad);
+      let minU = Infinity, maxU = -Infinity, minV = Infinity, maxV = -Infinity;
+      points.forEach(p => {
+        const du = p.x - cx, dz = p.z - cz;
+        const u = du * cos - dz * sin;
+        const v = du * sin + dz * cos;
+        minU = Math.min(minU, u); maxU = Math.max(maxU, u);
+        minV = Math.min(minV, v); maxV = Math.max(maxV, v);
+      });
+      return {
+        midX: cx, midZ: cz, cx, cz, rotRad,
+        spanX: (maxU - minU) * roofConfig.lengthScale,
+        spanZ: (maxV - minV) * roofConfig.widthScale,
+        minU, maxU, minV, maxV
+      };
+    }
+
+    function pushRoofBlueprint(type, props, roofConfig) {
+      const item = { type, ...props, claimed: false };
+      if (type === 'ROOF') item.color = roofConfig.colors.tile;
+      else if (type === 'RIDGE') item.color = roofConfig.colors.ridge;
+      else if (type === 'WOOD') item.color = roofConfig.colors.wood;
+      blueprint.push(item);
+    }
+
+    function buildWallAlongEdge(x0, z0, x1, z1, y, gaps, isExt) {
+      const dx = x1 - x0, dz = z1 - z0;
+      const edgeLen = Math.hypot(dx, dz);
+      if (edgeLen < 0.01) return;
+      const rotY = Math.atan2(dx, dz);
+      let cur = 0;
+      while (cur < edgeLen - 0.001) {
+        let nextBlock = edgeLen;
+        let insideOpening = false;
+        for (const op of gaps) {
+          if (cur >= op[0] - 0.001 && cur < op[1] - 0.001) {
+            insideOpening = true;
+            cur = op[1];
+            break;
+          }
+          if (op[0] > cur && op[0] < nextBlock) nextBlock = op[0];
+        }
+        if (insideOpening) continue;
+        const maxSpan = nextBlock - cur;
+        let len = TIJOLO_L;
+        let isCut = false;
+        if (maxSpan < TIJOLO_L) { len = maxSpan; isCut = true; }
+        if (len < 0.01) break;
+        const t = (cur + len / 2) / edgeLen;
+        blueprint.push({
+          type: 'BRICK', x: x0 + dx * t, z: z0 + dz * t, y,
+          len, h: TIJOLO_A, w: TIJOLO_P,
+          rot: { x: 0, y: rotY, z: 0 },
+          isCut, isExternal: isExt, claimed: false
+        });
+        cur += len;
+      }
+    }
+
+    function getEdgePos(wall, pos, geometry) {
+      if (!wall.startsWith('edge') || !geometry?.vertices) return null;
+      const ei = parseInt(wall.replace('edge', ''), 10);
+      if (isNaN(ei)) return null;
+      const verts = geometry.vertices;
+      const v0 = verts[ei];
+      const v1 = verts[(ei + 1) % verts.length];
+      const dx = v1.x - v0.x, dz = v1.z - v0.z;
+      const edgeLen = Math.hypot(dx, dz) || 1;
+      const t = Math.max(0, Math.min(1, pos / edgeLen));
+      const rotY = Math.atan2(dx, dz);
+      return { x: v0.x + dx * t, z: v0.z + dz * t, isZWall: Math.abs(dx) > Math.abs(dz), rotY };
+    }
+
+    function validateOpenings(openings, floors, geometry) {
+      if (!openings) return null;
+      const result = { doors: [], windows: [], stairs: [] };
+      const edgeCount = geometry?.isPolygon ? geometry.vertices.length : 0;
+      const validWalls = [...VALID_WALLS_RECT];
+      for (let i = 0; i < edgeCount; i++) validWalls.push('edge' + i);
+      const checkItem = (item, label) => {
+        if (typeof item.floor !== 'number' || item.floor < 0 || item.floor >= floors) {
+          throw new Error(label + ': "floor" inválido (0 a ' + (floors - 1) + ').');
+        }
+        if (!validWalls.includes(item.wall)) {
+          throw new Error(label + ': "wall" inválido. Use ' + validWalls.join(', ') + '.');
+        }
+        if (typeof item.pos !== 'number') throw new Error(label + ': "pos" numérico obrigatório.');
+      };
+      if (openings.doors) {
+        if (!Array.isArray(openings.doors)) throw new Error('"openings.doors" deve ser array.');
+        openings.doors.forEach((d, i) => { checkItem(d, 'doors[' + i + ']'); result.doors.push({ floor: d.floor, wall: d.wall, pos: d.pos }); });
+      }
+      if (openings.windows) {
+        if (!Array.isArray(openings.windows)) throw new Error('"openings.windows" deve ser array.');
+        openings.windows.forEach((w, i) => { checkItem(w, 'windows[' + i + ']'); result.windows.push({ floor: w.floor, wall: w.wall, pos: w.pos }); });
+      }
+      if (openings.stairs) {
+        if (!Array.isArray(openings.stairs)) throw new Error('"openings.stairs" deve ser array.');
+        openings.stairs.forEach((s, i) => {
+          if (typeof s.fromFloor !== 'number' || s.fromFloor < 0 || s.fromFloor >= floors - 1) {
+            throw new Error('stairs[' + i + ']: "fromFloor" inválido.');
+          }
+          result.stairs.push({
+            fromFloor: s.fromFloor,
+            minX: s.minX, maxX: s.maxX, minZ: s.minZ, maxZ: s.maxZ,
+            x: s.x, z: s.z, width: s.width, depth: s.depth
+          });
+        });
+      }
+      return result;
+    }
+
+    function generateSingleRigidArchitecture(building, paintColor, ox, oz, rotate180, hIndex) {
       const floors = building.floors || 1;
       const lay = building.layout || { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0, divX: [1.5], divZ: [] };
+      if (!lay.divX) lay.divX = [];
+      if (!lay.divZ) lay.divZ = [];
       window.currentLayout = lay;
-      window.currentRoof = building.roof || 'gable';
-
-      // Fundação removida por solicitação do usuário
+      const roofConfig = building.roofConfig || validateRoofConfig(null, building.roof || 'gable');
+      const geometry = resolveGeometry(building);
+      window.currentRoofConfig = roofConfig;
+      window.currentGeometry = geometry;
+      window.currentRoof = roofConfig.type;
+      const openings = building.openings || null;
+      window.currentOpenings = openings;
 
       // --- 2. PILARES ---
-      // Pilares nos cantos principais e encontros de parede.
-      const pillarY = (2.52 / 2); // Centro do andar (2.52m de altura)
+      const pillarY = (2.52 / 2);
       const pillars = [];
-      const addPillar = (px, pz) => {
-         pillars.push({x: px, z: pz});
-      };
-      
-      // Cantos externos
-      addPillar(lay.minX, lay.minZ);
-      addPillar(lay.maxX, lay.minZ);
-      addPillar(lay.minX, lay.maxZ);
-      addPillar(lay.maxX, lay.maxZ);
-      
-      // Encontros divX com paredes externas
-      if (lay.divX) {
+      const addPillar = (px, pz) => { pillars.push({ x: px, z: pz }); };
+
+      if (geometry.isPolygon) {
+        geometry.vertices.forEach(v => addPillar(v.x, v.z));
+      } else {
+        addPillar(lay.minX, lay.minZ);
+        addPillar(lay.maxX, lay.minZ);
+        addPillar(lay.minX, lay.maxZ);
+        addPillar(lay.maxX, lay.maxZ);
+      }
+
+      if (!geometry.isPolygon && lay.divX) {
          lay.divX.forEach(dx => {
             addPillar(dx, lay.minZ);
             addPillar(dx, lay.maxZ);
          });
       }
-      // Encontros divZ com paredes externas
-      if (lay.divZ) {
+      if (!geometry.isPolygon && lay.divZ) {
          lay.divZ.forEach(dz => {
             addPillar(lay.minX, dz);
             addPillar(lay.maxX, dz);
@@ -567,16 +1050,18 @@
       const winMin = 13;
       const winMax = 30;
 
-      const openNorth = [[-1.55, -0.65]];
-      const openSouth = [[-1.2, -0.3]];
-      
-      for(let x = lay.minX + 2.0; x < lay.maxX - 1.0; x += 3.5) {
-         if (x > -2.5 && x < 2.5) continue;
-         openNorth.push([x - 0.7, x + 0.7]);
-         openSouth.push([x - 0.7, x + 0.7]);
+      const openNorth = openings ? [] : [[-1.55, -0.65]];
+      const openSouth = openings ? [] : [[-1.2, -0.3]];
+
+      if (!openings) {
+        for (let x = lay.minX + 2.0; x < lay.maxX - 1.0; x += 3.5) {
+          if (x > -2.5 && x < 2.5) continue;
+          openNorth.push([x - 0.7, x + 0.7]);
+          openSouth.push([x - 0.7, x + 0.7]);
+        }
       }
 
-      const openEast  = [[-0.7, 0.7]];
+      const openEast  = openings ? [] : [[-0.7, 0.7]];
       const openDiv   = [[-0.45, 0.45]];
 
       for (let f = 0; f < floors; f++) {
@@ -586,25 +1071,37 @@
 
         for (let l = 0; l < layers; l++) {
           const y = offsetY + l * TIJOLO_A + TIJOLO_A / 2;
-          const even = (l % 2 === 0);
 
+          if (geometry.isPolygon) {
+            const verts = geometry.vertices;
+            for (let ei = 0; ei < verts.length; ei++) {
+              const wallId = 'edge' + ei;
+              const gaps = openings
+                ? getOpeningsForWall(openings, f, wallId, l, doorH, winMin, winMax)
+                : (f === 0 && l < doorH && ei === 0 ? [[0.3, 1.2]] : []);
+              buildWallAlongEdge(verts[ei].x, verts[ei].z, verts[(ei + 1) % verts.length].x, verts[(ei + 1) % verts.length].z, y, gaps, true);
+            }
+          } else {
           const xMin = lay.minX + TIJOLO_P/2;
           const xMax = lay.maxX - TIJOLO_P/2;
           const zMin = lay.minZ + TIJOLO_P/2;
           const zMax = lay.maxZ - TIJOLO_P/2;
 
-          const xWallOpeningsNorth = [];
-          if (f === 0 && l < doorH) xWallOpeningsNorth.push([...openNorth[0]]);
-          if (l >= winMin && l < winMax) {
-            for(let i = 1; i < openNorth.length; i++) xWallOpeningsNorth.push([...openNorth[i]]);
-          }
-
-          const xWallOpeningsSouth = [];
-          if (f === 0 && l < doorH) xWallOpeningsSouth.push([...openSouth[0]]);
-          else if (f > 0 && l >= winMin && l < winMax) xWallOpeningsSouth.push([-1.45, -0.05]);
-          
-          if (l >= winMin && l < winMax) {
-            for(let i = 1; i < openSouth.length; i++) xWallOpeningsSouth.push([...openSouth[i]]);
+          let xWallOpeningsNorth = [];
+          let xWallOpeningsSouth = [];
+          if (openings) {
+            xWallOpeningsNorth = getOpeningsForWall(openings, f, 'back', l, doorH, winMin, winMax);
+            xWallOpeningsSouth = getOpeningsForWall(openings, f, 'front', l, doorH, winMin, winMax);
+          } else {
+            if (f === 0 && l < doorH) xWallOpeningsNorth.push([...openNorth[0]]);
+            if (l >= winMin && l < winMax) {
+              for (let i = 1; i < openNorth.length; i++) xWallOpeningsNorth.push([...openNorth[i]]);
+            }
+            if (f === 0 && l < doorH) xWallOpeningsSouth.push([...openSouth[0]]);
+            else if (f > 0 && l >= winMin && l < winMax) xWallOpeningsSouth.push([-1.45, -0.05]);
+            if (l >= winMin && l < winMax) {
+              for (let i = 1; i < openSouth.length; i++) xWallOpeningsSouth.push([...openSouth[i]]);
+            }
           }
 
           if (lay.divX) {
@@ -614,8 +1111,14 @@
              });
           }
 
-          const zWallOpeningsWest = [];
-          const zWallOpeningsEast = (l >= winMin && l < winMax) ? [...openEast] : [];
+          let zWallOpeningsWest = [];
+          let zWallOpeningsEast = [];
+          if (openings) {
+            zWallOpeningsWest = getOpeningsForWall(openings, f, 'west', l, doorH, winMin, winMax);
+            zWallOpeningsEast = getOpeningsForWall(openings, f, 'east', l, doorH, winMin, winMax);
+          } else {
+            zWallOpeningsEast = (l >= winMin && l < winMax) ? [...openEast] : [];
+          }
           if (lay.divZ) {
              lay.divZ.forEach(dz => {
                  zWallOpeningsWest.push([dz - TIJOLO_P/2, dz + TIJOLO_P/2]);
@@ -625,7 +1128,6 @@
 
           buildWallLine(xMin, xMax, lay.minZ, y, 'X', xWallOpeningsNorth, true);
           buildWallLine(xMin, xMax, lay.maxZ, y, 'X', xWallOpeningsSouth, true);
-
           buildWallLine(zMin, zMax, lay.minX, y, 'Z', zWallOpeningsWest, true);
           buildWallLine(zMin, zMax, lay.maxX, y, 'Z', zWallOpeningsEast, true);
           
@@ -652,7 +1154,9 @@
                   buildWallLine(dzMin, dzMax, dz, y, 'X', divZOpenings, false);
               });
           }
-          if (l === 18 || l === 30) {
+          }
+
+          if (!geometry.isPolygon && (l === 18 || l === 30)) {
               const scafH = 1.0;
               const scafY = offsetY + (l === 18 ? (scafH / 2) : (scafH * 1.5));
               const scafSortY = floorSortBase + l * 0.1;
@@ -671,53 +1175,40 @@
           }
         }
 
-        // Stair dimensions — consistent for holeArea matching
-        const STAIR_W = 1.4; // width along X
-        const STAIR_D = 2.2; // depth along Z
-        const STAIR_MARGIN = 0.25;
-
         let holeArea = null;
         if (f > 0) {
-           // Stairs built on floor f-1 go UP to floor f — hole is on floor f's slab
            const belowF = f - 1;
-           let sMinX, sMaxX;
-           if (belowF % 2 !== 0 && lay.maxX - lay.minX > 5.0) {
-              sMinX = lay.minX + 0.3;
-              sMaxX = lay.minX + 0.3 + STAIR_W;
-           } else {
-              sMinX = lay.maxX - 0.3 - STAIR_W;
-              sMaxX = lay.maxX - 0.3;
-           }
-           const sMinZ = lay.maxZ - 0.6 - STAIR_D;
-           const sMaxZ = lay.maxZ - 0.6;
+           const stairDef = openings
+             ? (openings.stairs.find(s => s.fromFloor === belowF) || { fromFloor: belowF })
+             : { fromFloor: belowF };
+           const bounds = resolveStairBounds(stairDef, lay);
            holeArea = {
-             minX: sMinX - STAIR_MARGIN,
-             maxX: sMaxX + STAIR_MARGIN,
-             minZ: sMinZ - STAIR_MARGIN,
-             maxZ: sMaxZ + STAIR_MARGIN
+             minX: bounds.sMinX - STAIR_MARGIN,
+             maxX: bounds.sMaxX + STAIR_MARGIN,
+             minZ: bounds.sMinZ - STAIR_MARGIN,
+             maxZ: bounds.sMaxZ + STAIR_MARGIN
            };
         }
 
-        buildFloorAndGrout(f === 0 ? 0.01 : offsetY, f, holeArea);
+        buildFloorAndGrout(f === 0 ? 0.01 : offsetY, f, holeArea, openings);
         
         if (f < floors - 1) {
-          // Build stairs going up FROM this floor
-          let sMinX, sMaxX;
-          if (f % 2 !== 0 && lay.maxX - lay.minX > 5.0) {
-             sMinX = lay.minX + 0.3;
-             sMaxX = lay.minX + 0.3 + STAIR_W;
-          } else {
-             sMinX = lay.maxX - 0.3 - STAIR_W;
-             sMaxX = lay.maxX - 0.3;
-          }
-          const sMinZ = lay.maxZ - 0.6 - STAIR_D;
-          const sMaxZ = lay.maxZ - 0.6;
+          const stairDef = openings
+            ? (openings.stairs.find(s => s.fromFloor === f) || { fromFloor: f })
+            : { fromFloor: f };
+          const bounds = resolveStairBounds(stairDef, lay);
+          const sMinX = bounds.sMinX;
+          const sMaxX = bounds.sMaxX;
+          const sMinZ = bounds.sMinZ;
+          const sMaxZ = bounds.sMaxZ;
           const stairMidX = (sMinX + sMaxX) / 2;
+          const stairW = sMaxX - sMinX;
+          const stairD = sMaxZ - sMinZ;
           
           const steps = 16;
           const floorH = layers * TIJOLO_A;
           const stepH = floorH / steps;
-          const stepD = STAIR_D / steps;
+          const stepD = stairD / steps;
           
           for (let s = 0; s < steps; s++) {
             blueprint.push({
@@ -725,7 +1216,7 @@
               x: stairMidX,
               y: offsetY + s * stepH + stepH * 0.5,
               z: sMinZ + s * stepD + stepD * 0.5,
-              len: STAIR_W, h: stepH * 0.8, w: stepD * 1.1,
+              len: stairW, h: stepH * 0.8, w: stepD * 1.1,
               rot: {x:0, y:0, z:0},
               sortY: offsetY + s * stepH,
               claimed: false,
@@ -748,26 +1239,7 @@
       const roofSortBase = floors * 1000;
       const roofStartIndex = blueprint.length;
       
-      if (window.currentRoof === 'flat') {
-         buildFloorAndGrout(totalLayers * TIJOLO_A, floors);
-         const yBase = totalLayers * TIJOLO_A;
-         for (let pl = 0; pl < 4; pl++) {
-            const py = yBase + pl * TIJOLO_A + TIJOLO_A / 2;
-            const even = (pl % 2 === 0);
-            const pXMin = even ? lay.minX - TIJOLO_P/2 : lay.minX + TIJOLO_P/2;
-            const pXMax = even ? lay.maxX + TIJOLO_P/2 : lay.maxX - TIJOLO_P/2;
-            const pZMin = even ? lay.minZ + TIJOLO_P/2 : lay.minZ - TIJOLO_P/2;
-            const pZMax = even ? lay.maxZ - TIJOLO_P/2 : lay.maxZ + TIJOLO_P/2;
-            
-            buildWallLine(pXMin, pXMax, lay.minZ, py, 'X', [], true);
-            buildWallLine(pXMin, pXMax, lay.maxZ, py, 'X', [], true);
-            buildWallLine(pZMin, pZMax, lay.minX, py, 'Z', [], true);
-            buildWallLine(pZMin, pZMax, lay.maxX, py, 'Z', [], true);
-         }
-      } else {
-         buildTriangularGables(totalLayers);
-         buildRealisticRoofStructure(totalLayers);
-      }
+      buildRoofStructure(totalLayers, roofConfig, geometry, lay);
 
       for (let i = roofStartIndex; i < blueprint.length; i++) {
          if (blueprint[i].sortY !== undefined) blueprint[i].sortY += roofSortBase;
@@ -793,9 +1265,9 @@
 
       // Doors, windows and their wooden frames go VERY LAST — after everything including paint
       const finishingSortBase = (floors + 2) * 1000;
-      addAllDoorsWindowsAndFrames(finishingSortBase, floors, lay);
+      addAllDoorsWindowsAndFrames(finishingSortBase, floors, lay, openings);
 
-      // Clean up scaffolds
+      // Clean up scaffolds and material pallets when this house is finished
       const scaffoldRemovalBase = (floors + 3) * 1000;
       const scaffoldTasks = blueprint.filter(t => t.type === 'SCAFFOLD');
       scaffoldTasks.forEach((s, idx) => {
@@ -807,7 +1279,158 @@
              claimed: false
          });
       });
+      blueprint.push({
+          type: 'REMOVE_PALLETS',
+          x: lay.minX, y: 0, z: lay.minZ - 6,
+          sortY: scaffoldRemovalBase + scaffoldTasks.length + 1,
+          claimed: false
+      });
 
+    }
+
+    function generateRigidArchitecture(building, paintColor) {
+      if (building.id === 'bairro') {
+        generateBairro(paintColor);
+      } else {
+        window.isBairroMode = false;
+        generateSingleRigidArchitecture(building, paintColor, 0, 0, false, 0);
+        blueprint.forEach(t => { t.houseIndex = 0; t.pallets = { bricks: palletBricksPos, wood: palletWoodPos, roof: palletRoofPos, floor: palletFloorPos, glass: palletGlassPos, paint: palletPaintPos }; });
+        window.houseLayouts = [ window.currentLayout ];
+        finalizeBlueprint();
+      }
+    }
+
+    function createCityEnvironment() {
+       const stMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.9 });
+       const hStreet = new THREE.Mesh(new THREE.BoxGeometry(260, 0.02, 8), stMat);
+       hStreet.position.set(78, 0.01, 7);
+       scene.add(hStreet);
+       
+       const vStreet = new THREE.Mesh(new THREE.BoxGeometry(10, 0.02, 70), stMat);
+       vStreet.position.set(78, 0.01, 7);
+       scene.add(vStreet);
+
+       const swMat = new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 1.0 });
+       const addSW = (x, z, w, d) => {
+           const sw = new THREE.Mesh(new THREE.BoxGeometry(w, 0.06, d), swMat);
+           sw.position.set(x, 0.03, z);
+           scene.add(sw);
+       };
+       // Top-left
+       addSW(16.5, -11, 113, 28);
+       // Top-right
+       addSW(139.5, -11, 113, 28);
+       // Bottom-left
+       addSW(16.5, 25, 113, 28);
+       // Bottom-right
+       addSW(139.5, 25, 113, 28); 
+
+       // Add perimeter walls (Muros do Bairro)
+       const wallMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 1.0 });
+       const wallThickness = 0.5;
+       const wallHeight = 3.0;
+       const addWall = (x, z, w, d) => {
+           const wall = new THREE.Mesh(new THREE.BoxGeometry(w, wallHeight, d), wallMat);
+           wall.position.set(x, wallHeight/2, z);
+           wall.castShadow = true;
+           wall.receiveShadow = true;
+           scene.add(wall);
+       };
+       
+       // Top walls
+       addWall(16.5, -25, 113, wallThickness);
+       addWall(139.5, -25, 113, wallThickness);
+       // Bottom walls
+       addWall(16.5, 39, 113, wallThickness);
+       addWall(139.5, 39, 113, wallThickness);
+       // Left walls
+       addWall(-40, -11, wallThickness, 28);
+       addWall(-40, 25, wallThickness, 28);
+       // Right walls
+       addWall(196, -11, wallThickness, 28);
+       addWall(196, 25, wallThickness, 28);
+    }
+
+    function generateBairro(paintColor) {
+        window.isBairroMode = true;
+        // Only use smaller residential templates to fit the lots nicely
+        const templates = BUILDINGS.filter(s => [1, 2, 3, 4, 'l_shape'].includes(s.id));
+        window.houseLayouts = [];
+        let hIndex = 0;
+        let globalBlueprint = [];
+        
+        for (let r = 0; r < 2; r++) {
+            const rotate180 = (r === 1);
+            // Increased Z spacing to pull houses further away from the street
+            const oz = (r === 0) ? -4 : 18; 
+            for (let i = 0; i < 10; i++) {
+                // Increased X spacing to 20m per lot
+                let ox = i * 20 - 20;
+                if (i >= 5) ox += 16; // Wider gap for vertical street
+                
+                const template = templates[Math.floor(Math.random() * templates.length)];
+                
+                const randomColors = [0xffffff, 0xef4444, 0x3b82f6, 0x10b981, 0xf59e0b, 0x8b5cf6, 0x06b6d4, 0xf43f5e];
+                const houseColor = randomColors[Math.floor(Math.random() * randomColors.length)];
+                
+                blueprint = [];
+                generateSingleRigidArchitecture(template, houseColor, ox, oz, rotate180, hIndex);
+                
+                let lay = window.currentLayout;
+                let hMinX = lay.minX, hMaxX = lay.maxX, hMinZ = lay.minZ, hMaxZ = lay.maxZ;
+                if (rotate180) {
+                    hMinX = -lay.maxX; hMaxX = -lay.minX;
+                    hMinZ = -lay.maxZ; hMaxZ = -lay.minZ;
+                }
+                window.houseLayouts[hIndex] = {
+                    minX: hMinX + ox, maxX: hMaxX + ox,
+                    minZ: hMinZ + oz, maxZ: hMaxZ + oz,
+                    isRotated: rotate180, ox: ox, oz: oz
+                };
+                
+                let bz = rotate180 ? 6 : -6;
+                let hPallets = {
+                    bricks: new THREE.Vector3(ox - 2, 0, oz + bz),
+                    wood:   new THREE.Vector3(ox,     0, oz + bz),
+                    roof:   new THREE.Vector3(ox + 2, 0, oz + bz),
+                    floor:  new THREE.Vector3(ox + 4, 0, oz + bz),
+                    glass:  new THREE.Vector3(ox - 2, 0, oz + bz + (rotate180 ? 2 : -2)),
+                    paint:  new THREE.Vector3(ox,     0, oz + bz + (rotate180 ? 2 : -2))
+                };
+                
+                blueprint.forEach(t => {
+                    if (rotate180) {
+                        t.x = -t.x; t.z = -t.z;
+                        if (t.rot !== undefined) {
+                            t.rot.y = (t.rot.y || 0) + Math.PI;
+                            if (t.rot.x) t.rot.x = -t.rot.x;
+                        }
+                    }
+                    t.x += ox; t.z += oz;
+                    t.houseIndex = hIndex;
+                    t.pallets = hPallets;
+                    globalBlueprint.push(t);
+                });
+                
+                storeHousePallets(hIndex, [
+                  createStockPallet(hPallets.bricks, 0xb45309, new THREE.Vector3(2.0, STACK_BRICK_H, 2.0)),
+                  createStockPallet(hPallets.wood,   0x854d0e, new THREE.Vector3(1.8, STACK_WOOD_H, 1.8)),
+                  createStockPallet(hPallets.roof,   0xc2410c, new THREE.Vector3(1.8, STACK_ROOF_H, 1.8)),
+                  createStockPallet(hPallets.floor,  0xe2e8f0, new THREE.Vector3(1.8, 1.0, 1.8)),
+                  createStockPallet(hPallets.glass,  0x88ccff, new THREE.Vector3(1.8, 1.0, 1.8), 'GLASS'),
+                  createStockPallet(hPallets.paint,  houseColor, new THREE.Vector3(1.8, 1.0, 1.8), 'PAINT')
+                ]);
+                
+                hIndex++;
+            }
+        }
+        
+        blueprint = globalBlueprint;
+        createCityEnvironment();
+        finalizeBlueprint();
+    }
+
+    function finalizeBlueprint() {
       blueprint.sort((a, b) => (a.sortY !== undefined ? a.sortY : a.y) - (b.sortY !== undefined ? b.sortY : b.y));
 
       initialBricks = 0;
@@ -827,13 +1450,11 @@
       stockRoof = initialRoof;
       stockFloor = initialFloor;
     }
-
-    // ==============================================================
     // FINISHING PHASE: Wood frames + doors + windows placed LAST
     // after all bricks, roof, and paint are done
     // ==============================================================
-    function addAllDoorsWindowsAndFrames(baseSortY, floors, lay) {
-      const t = 0.06; // frame thickness
+    function addAllDoorsWindowsAndFrames(baseSortY, floors, lay, openings) {
+      const t = 0.06;
 
       function pushHollowFrame(x, z, w, h, isZWall, yBase, isWindow, sortY) {
         if (!isZWall) {
@@ -849,26 +1470,50 @@
         }
       }
 
+      function placeDoor(door, offsetY, floorFinish, f) {
+        const wp = getDoorWorldPos(door, lay);
+        const rotY = wp.rotY !== undefined ? wp.rotY : (wp.isZWall ? Math.PI / 2 : 0);
+        const isZWall = wp.rotY !== undefined ? Math.abs(Math.cos(rotY)) > Math.abs(Math.sin(rotY)) : wp.isZWall;
+        pushHollowFrame(wp.x, wp.z, 0.9, 2.1, isZWall, offsetY, false, floorFinish);
+        blueprint.push({
+          type: 'DOOR', x: wp.x, y: offsetY + 1.05, z: wp.z,
+          len: 0.8, h: 2.0, w: 0.05, rot: {x:0,y:rotY,z:0},
+          sortY: floorFinish + 1, floorIndex: f, claimed: false
+        });
+      }
+
+      function placeWindow(win, offsetY, floorFinish, f) {
+        const wp = getWindowWorldPos(win, lay);
+        const rotY = wp.rotY !== undefined ? wp.rotY : (wp.isZWall ? Math.PI / 2 : 0);
+        const isZWall = wp.rotY !== undefined ? Math.abs(Math.cos(rotY)) > Math.abs(Math.sin(rotY)) : wp.isZWall;
+        pushHollowFrame(wp.x, wp.z, 1.4, 1.1, isZWall, offsetY + 0.95, true, floorFinish);
+        blueprint.push({
+          type: 'WINDOW', x: wp.x, y: offsetY + 1.5, z: wp.z,
+          len: 1.3, h: 1.0, w: 0.05, rot: {x:0,y:rotY,z:0},
+          sortY: floorFinish + 1, floorIndex: f, claimed: false
+        });
+      }
+
       for (let f = 0; f < floors; f++) {
         const offsetY = f * 36 * TIJOLO_A;
-        // Each floor gets its finishing sortY, so higher floors finish later
         const floorFinish = baseSortY + f * 10;
 
-        // --- EXTERNAL FRONT DOOR (ground floor) or Window (upper floors) ---
+        if (openings) {
+          openings.doors.filter(d => d.floor === f).forEach(d => placeDoor(d, offsetY, floorFinish, f));
+          openings.windows.filter(w => w.floor === f).forEach(w => placeWindow(w, offsetY, floorFinish, f));
+          continue;
+        }
+
         if (f === 0) {
-          // Front door frame + door
           pushHollowFrame(-0.75, lay.maxZ, 0.9, 2.1, false, offsetY, false, floorFinish);
           blueprint.push({ type: 'DOOR', x: -0.75, y: offsetY + 1.05, z: lay.maxZ, len: 0.8, h: 2.0, w: 0.05, rot: {x:0,y:0,z:0}, sortY: floorFinish + 1, floorIndex: f, claimed: false });
-          // Back door frame + door
           pushHollowFrame(-1.1, lay.minZ, 0.9, 2.1, false, offsetY, false, floorFinish);
           blueprint.push({ type: 'DOOR', x: -1.1, y: offsetY + 1.05, z: lay.minZ, len: 0.8, h: 2.0, w: 0.05, rot: {x:0,y:0,z:0}, sortY: floorFinish + 1, floorIndex: f, claimed: false });
         } else {
-          // Upper floors: windows where doors were
           pushHollowFrame(-0.75, lay.maxZ, 1.4, 1.1, false, offsetY + 0.95, true, floorFinish);
           blueprint.push({ type: 'WINDOW', x: -0.75, y: offsetY + 1.5, z: lay.maxZ, len: 1.3, h: 1.0, w: 0.05, rot: {x:0,y:0,z:0}, sortY: floorFinish + 1, floorIndex: f, claimed: false });
         }
 
-        // --- INTERNAL DIVIDING WALL DOORS ---
         lay.divX.forEach(dx => {
           pushHollowFrame(dx, 0, 0.9, 2.1, true, offsetY, false, floorFinish);
           blueprint.push({ type: 'DOOR', x: dx, y: offsetY + 1.05, z: 0, len: 0.8, h: 2.0, w: 0.05, rot: {x:0,y:Math.PI/2,z:0}, sortY: floorFinish + 1, floorIndex: f, claimed: false });
@@ -881,7 +1526,6 @@
           });
         }
 
-        // --- EXTERNAL WINDOWS (repeating pattern on front/back/side) ---
         for (let x = lay.minX + 2.0; x < lay.maxX - 1.0; x += 3.5) {
           if (x > -2.5 && x < 2.5) continue;
           pushHollowFrame(x, lay.maxZ, 1.4, 1.1, false, offsetY + 0.95, true, floorFinish);
@@ -890,7 +1534,6 @@
           blueprint.push({ type: 'WINDOW', x: x, y: offsetY + 1.5, z: lay.minZ, len: 1.3, h: 1.0, w: 0.05, rot: {x:0,y:0,z:0}, sortY: floorFinish + 1, floorIndex: f, claimed: false });
         }
 
-        // East wall window
         pushHollowFrame(lay.maxX, 0, 1.4, 1.1, true, offsetY + 0.95, true, floorFinish);
         blueprint.push({ type: 'WINDOW', x: lay.maxX, y: offsetY + 1.5, z: 0, len: 1.3, h: 1.0, w: 0.05, rot: {x:0,y:Math.PI/2,z:0}, sortY: floorFinish + 1, floorIndex: f, claimed: false });
       }
@@ -944,204 +1587,293 @@
       }
     }
 
-    function buildTriangularGables(baseLayers) {
-      const lay = window.currentLayout;
-      const baseWallY = baseLayers * TIJOLO_A;
-      
-      const midZ = (lay.maxZ + lay.minZ) / 2;
-      const halfWidth = (lay.maxZ - lay.minZ) / 2;
-      const eavesOverhang = 0.35;
-      const totalHalfSpan = halfWidth + eavesOverhang;
+    function buildRoofStructure(baseLayers, roofConfig, geometry, lay) {
+      switch (roofConfig.type) {
+        case 'flat': buildFlatRoof(baseLayers, roofConfig, lay, geometry); break;
+        case 'hip': buildHipRoof(baseLayers, roofConfig, lay, geometry); break;
+        case 'shed': buildShedRoof(baseLayers, roofConfig, lay, geometry); break;
+        case 'dome': buildDomeRoof(baseLayers, roofConfig, geometry); break;
+        case 'conical': buildConicalRoof(baseLayers, roofConfig, geometry); break;
+        case 'pyramid': buildPyramidRoof(baseLayers, roofConfig, geometry); break;
+        default: buildGableRoof(baseLayers, roofConfig, lay, geometry); break;
+      }
+    }
 
-      // Match same ridge height as buildRealisticRoofStructure
-      const ridgeHeight = totalHalfSpan * 0.45;
-      const gableLayers = Math.ceil(ridgeHeight / TIJOLO_A);
-      const maxSpan = halfWidth;
+    function getRoofSpanParams(lay, roofConfig, geometry) {
+      const b = computeRoofBounds(lay, geometry, roofConfig);
+      const rotated = Math.abs(roofConfig.rotation % 180) === 90;
+      const halfWidth = (rotated ? b.spanX : b.spanZ) / 2;
+      const totalHalfSpan = halfWidth + roofConfig.overhang;
+      const ridgeHeight = totalHalfSpan * roofConfig.pitch;
+      return {
+        rotated, spanX: b.spanX, spanZ: b.spanZ, halfWidth, totalHalfSpan, ridgeHeight,
+        midX: b.midX, midZ: b.midZ, bounds: b
+      };
+    }
 
+    function buildGableGables(baseLayers, roofConfig, lay, geometry) {
+      if (geometry?.isPolygon) return;
+      const baseWallY = baseLayers * TIJOLO_A + roofConfig.offsetY;
+      const p = getRoofSpanParams(lay, roofConfig, geometry);
+      const gableLayers = Math.ceil(p.ridgeHeight / TIJOLO_A);
       const gablePositionsX = [lay.minX, lay.maxX];
-
       for (let gl = 0; gl < gableLayers; gl++) {
         const y = baseWallY + gl * TIJOLO_A + TIJOLO_A / 2;
-        const progress = (gl * TIJOLO_A) / ridgeHeight;
-        const halfSpan = maxSpan * (1 - progress);
-
+        const progress = (gl * TIJOLO_A) / p.ridgeHeight;
+        const halfSpan = p.halfWidth * (1 - progress);
         if (halfSpan < 0.15) break;
-
         gablePositionsX.forEach(posX => {
-          const isExt = (posX === lay.minX || posX === lay.maxX);
-          buildWallLine(midZ - halfSpan, midZ + halfSpan, posX, y, 'Z', [], isExt);
+          buildWallLine(p.midZ - halfSpan, p.midZ + halfSpan, posX, y, 'Z', [], posX === lay.minX || posX === lay.maxX);
         });
       }
     }
 
-    // =======================================================
-    // ESTRUTURA DO TELHADO CORRIGIDA (versão funcional)
-    // =======================================================
-    function buildRealisticRoofStructure(baseLayers) {
-      const lay = window.currentLayout;
-      const baseWallY = baseLayers * TIJOLO_A;
-      
-      const midZ = (lay.maxZ + lay.minZ) / 2;
-      const halfWidth = (lay.maxZ - lay.minZ) / 2;
-      const eavesOverhang = 0.35;
-      const totalHalfSpan = halfWidth + eavesOverhang;
-      
-      // Proporção de inclinação fixa — igual à versão boa
-      const ridgeHeight = totalHalfSpan * 0.45;
-      const roofPeakY = baseWallY + ridgeHeight;
+    function buildGableRoof(baseLayers, roofConfig, lay, geometry) {
+      buildGableGables(baseLayers, roofConfig, lay, geometry);
+      const baseWallY = baseLayers * TIJOLO_A + roofConfig.offsetY;
+      const p = getRoofSpanParams(lay, roofConfig, geometry);
+      const roofPeakY = baseWallY + p.ridgeHeight;
+      const pitchAngle = Math.atan2(p.ridgeHeight, p.totalHalfSpan);
+      const rafterLength = Math.hypot(p.ridgeHeight, p.totalHalfSpan);
+      const roofLengthX = p.spanX + roofConfig.overhang * 2;
+      const roofMidX = p.midX;
+      const rotY = roofConfig.rotation * Math.PI / 180;
 
-      const pitchAngle = Math.atan2(ridgeHeight, totalHalfSpan);
-      const rafterLength = Math.hypot(ridgeHeight, totalHalfSpan);
-      const roofLengthX = (lay.maxX - lay.minX) + 0.8;
-      const roofMidX = (lay.maxX + lay.minX) / 2;
+      pushRoofBlueprint('WOOD', {
+        x: roofMidX, z: p.midZ, y: roofPeakY - 0.05, sortY: 6.0,
+        len: roofLengthX, h: 0.12, w: 0.12, rot: { x: 0, y: rotY, z: 0 }
+      }, roofConfig);
 
-      // 1. Cumeeira principal (Main Ridge Beam)
-      blueprint.push({
-        type: 'WOOD',
-        x: roofMidX, z: midZ, y: roofPeakY - 0.05,
-        sortY: 6.0,
-        len: roofLengthX, h: 0.12, w: 0.12,
-        rot: { x: 0, y: 0, z: 0 },
-        claimed: false
-      });
-
-      // 2. Caibros (Rafters)
-      for (let x = lay.minX - 0.3; x <= lay.maxX + 0.3; x += 0.8) {
-        blueprint.push({
-          type: 'WOOD',
-          x: x,
-          z: midZ + totalHalfSpan / 2,
-          y: roofPeakY - (ridgeHeight / 2) + 0.02,
-          sortY: 6.0,
-          len: 0.08, h: 0.10, w: rafterLength,
-          rot: { x: pitchAngle, y: 0, z: 0 },
-          claimed: false
-        });
-
-        blueprint.push({
-          type: 'WOOD',
-          x: x,
-          z: midZ - totalHalfSpan / 2,
-          y: roofPeakY - (ridgeHeight / 2) + 0.02,
-          sortY: 6.0,
-          len: 0.08, h: 0.10, w: rafterLength,
-          rot: { x: -pitchAngle, y: 0, z: 0 },
-          claimed: false
-        });
+      const numRafters = Math.max(2, Math.ceil(roofLengthX / 0.8));
+      const rafterStepX = roofLengthX / numRafters;
+      for (let i = 0; i <= numRafters; i++) {
+        const x = roofMidX - roofLengthX / 2 + i * rafterStepX;
+        pushRoofBlueprint('WOOD', {
+          x, z: p.midZ + p.totalHalfSpan / 2, y: roofPeakY - p.ridgeHeight / 2 + 0.02, sortY: 6.0,
+          len: 0.08, h: 0.10, w: rafterLength, rot: { x: pitchAngle, y: rotY, z: 0 }
+        }, roofConfig);
+        pushRoofBlueprint('WOOD', {
+          x, z: p.midZ - p.totalHalfSpan / 2, y: roofPeakY - p.ridgeHeight / 2 + 0.02, sortY: 6.0,
+          len: 0.08, h: 0.10, w: rafterLength, rot: { x: -pitchAngle, y: rotY, z: 0 }
+        }, roofConfig);
       }
 
-      // 3. Ripas (Slats)
-      const numSlats = Math.ceil(totalHalfSpan / 0.4);
+      const numSlats = Math.ceil(p.totalHalfSpan / 0.4);
       for (let s = 1; s <= numSlats; s++) {
         const frac = s / (numSlats + 0.5);
-        const zDist = frac * totalHalfSpan;
-        const yDrop = frac * ridgeHeight;
-
-        blueprint.push({
-          type: 'WOOD',
-          x: roofMidX, z: midZ + zDist, y: roofPeakY - yDrop + 0.06,
-          sortY: 6.1,
-          len: roofLengthX, h: 0.04, w: 0.06,
-          rot: { x: pitchAngle, y: 0, z: 0 },
-          claimed: false
-        });
-        blueprint.push({
-          type: 'WOOD',
-          x: roofMidX, z: midZ - zDist, y: roofPeakY - yDrop + 0.06,
-          sortY: 6.1,
-          len: roofLengthX, h: 0.04, w: 0.06,
-          rot: { x: -pitchAngle, y: 0, z: 0 },
-          claimed: false
-        });
+        const zDist = frac * p.totalHalfSpan;
+        const yDrop = frac * p.ridgeHeight;
+        pushRoofBlueprint('WOOD', {
+          x: roofMidX, z: p.midZ + zDist, y: roofPeakY - yDrop + 0.06, sortY: 6.1,
+          len: roofLengthX, h: 0.04, w: 0.06, rot: { x: pitchAngle, y: rotY, z: 0 }
+        }, roofConfig);
+        pushRoofBlueprint('WOOD', {
+          x: roofMidX, z: p.midZ - zDist, y: roofPeakY - yDrop + 0.06, sortY: 6.1,
+          len: roofLengthX, h: 0.04, w: 0.06, rot: { x: -pitchAngle, y: rotY, z: 0 }
+        }, roofConfig);
       }
 
-      // 4. Telhas (Roof Tiles)
-      const tileStepX = 0.28;
       const tileW = 0.26;
-      const tileRows = Math.ceil(totalHalfSpan / 0.35);
-      const minLimitX = lay.minX - 0.35;
-      const maxLimitX = lay.maxX + 0.35;
-
+      const numTilesX = Math.max(1, Math.ceil(roofLengthX / 0.28));
+      const tileStepX = roofLengthX / numTilesX;
+      const tileRows = Math.ceil(p.totalHalfSpan / 0.35);
       for (let r = 0; r < tileRows; r++) {
         const tFrac = r / (tileRows - 0.7);
-        const zDist = tFrac * totalHalfSpan + 0.15;
-        const yDrop = tFrac * ridgeHeight;
+        const zDist = tFrac * p.totalHalfSpan + 0.15;
+        const yDrop = tFrac * p.ridgeHeight;
         const tileY = roofPeakY - yDrop + 0.08;
-
-        let curX = minLimitX;
-        while (curX < maxLimitX) {
-          const maxSpan = maxLimitX - curX;
-          let len = tileW;
-          let step = tileStepX;
-          
-          if (maxSpan < tileW) {
-            if (maxSpan < 0.05) break;
-            len = maxSpan;
-            step = maxSpan; // cut tile doesn't need gap after it
-          }
-
-          const centerX = curX + len / 2;
-
-          blueprint.push({
-            type: 'ROOF',
-            x: centerX,
-            z: midZ + zDist,
-            y: tileY,
-            sortY: 7.0 + r * 0.01,
-            len: len, h: 0.045, w: 0.46,
-            rot: { x: pitchAngle, y: 0, z: 0 },
-            claimed: false
-          });
-
-          blueprint.push({
-            type: 'ROOF',
-            x: centerX,
-            z: midZ - zDist,
-            y: tileY,
-            sortY: 7.0 + r * 0.01,
-            len: len, h: 0.045, w: 0.46,
-            rot: { x: -pitchAngle, y: 0, z: 0 },
-            claimed: false
-          });
-
-          curX += step;
+        for (let i = 0; i < numTilesX; i++) {
+          const centerX = roofMidX - roofLengthX / 2 + i * tileStepX + tileStepX / 2;
+          pushRoofBlueprint('ROOF', {
+            x: centerX, z: p.midZ + zDist, y: tileY, sortY: 7.0 + r * 0.01,
+            len: tileW, h: 0.045, w: 0.46, rot: { x: pitchAngle, y: rotY, z: 0 }
+          }, roofConfig);
+          pushRoofBlueprint('ROOF', {
+            x: centerX, z: p.midZ - zDist, y: tileY, sortY: 7.0 + r * 0.01,
+            len: tileW, h: 0.045, w: 0.46, rot: { x: -pitchAngle, y: rotY, z: 0 }
+          }, roofConfig);
         }
       }
 
-      // 5. Telhas de Cumeeira (Ridge Tiles)
-      const ridgeStepX = 0.25;
-      const ridgeW = 0.28;
-      const rMinX = lay.minX - 0.4;
-      const rMaxX = lay.maxX + 0.4;
-      let rCurX = rMinX;
-
+      let rCurX = roofMidX - roofLengthX / 2;
+      const rMaxX = roofMidX + roofLengthX / 2;
       while (rCurX < rMaxX) {
         const maxSpan = rMaxX - rCurX;
-        let len = ridgeW;
-        let step = ridgeStepX;
-
-        if (maxSpan < ridgeW) {
-          if (maxSpan < 0.05) break;
-          len = maxSpan;
-          step = maxSpan;
-        }
-
-        const centerX = rCurX + len / 2;
-
-        blueprint.push({
-          type: 'RIDGE',
-          x: centerX, z: midZ, y: roofPeakY + 0.12,
-          sortY: 8.0,
-          len: len, h: 0.06, w: 0.26,
-          rot: { x: 0, y: 0, z: 0 },
-          claimed: false
-        });
-
-        rCurX += step;
+        let len = 0.28;
+        if (maxSpan < 0.05) break;
+        if (maxSpan < len) len = maxSpan;
+        pushRoofBlueprint('RIDGE', {
+          x: rCurX + len / 2, z: p.midZ, y: roofPeakY + 0.12, sortY: 8.0,
+          len, h: 0.06, w: 0.26, rot: { x: 0, y: rotY, z: 0 }
+        }, roofConfig);
+        rCurX += 0.25;
       }
     }
 
-    function buildFloorAndGrout(offsetY = 0.01, floorIndex = 0, holeArea = null) {
+    function buildFlatRoof(baseLayers, roofConfig, lay, geometry) {
+      buildFloorAndGrout(baseLayers * TIJOLO_A, baseLayers, null, null);
+      const yBase = baseLayers * TIJOLO_A + roofConfig.offsetY;
+      for (let pl = 0; pl < 4; pl++) {
+        const py = yBase + pl * TIJOLO_A + TIJOLO_A / 2;
+        if (geometry.isPolygon) {
+          geometry.vertices.forEach((v, i) => {
+            const v1 = geometry.vertices[(i + 1) % geometry.vertices.length];
+            buildWallAlongEdge(v.x, v.z, v1.x, v1.z, py, [], true);
+          });
+        } else {
+          const even = (pl % 2 === 0);
+          const pXMin = even ? lay.minX - TIJOLO_P/2 : lay.minX + TIJOLO_P/2;
+          const pXMax = even ? lay.maxX + TIJOLO_P/2 : lay.maxX - TIJOLO_P/2;
+          const pZMin = even ? lay.minZ + TIJOLO_P/2 : lay.minZ - TIJOLO_P/2;
+          const pZMax = even ? lay.maxZ - TIJOLO_P/2 : lay.maxZ + TIJOLO_P/2;
+          buildWallLine(pXMin, pXMax, lay.minZ, py, 'X', [], true);
+          buildWallLine(pXMin, pXMax, lay.maxZ, py, 'X', [], true);
+          buildWallLine(pZMin, pZMax, lay.minX, py, 'Z', [], true);
+          buildWallLine(pZMin, pZMax, lay.maxX, py, 'Z', [], true);
+        }
+      }
+    }
+
+    function buildShedRoof(baseLayers, roofConfig, lay, geometry) {
+      const baseWallY = baseLayers * TIJOLO_A + roofConfig.offsetY;
+      const p = getRoofSpanParams(lay, roofConfig, geometry);
+      const roofPeakY = baseWallY + p.ridgeHeight;
+      const pitchAngle = Math.atan2(p.ridgeHeight, p.totalHalfSpan * 2);
+      const roofLengthX = p.spanX + roofConfig.overhang * 2;
+      const roofMidX = p.midX;
+      const rotY = roofConfig.rotation * Math.PI / 180;
+      const shedSpan = p.spanZ + roofConfig.overhang * 2;
+      const tileRows = Math.ceil(shedSpan / 0.35);
+      for (let r = 0; r < tileRows; r++) {
+        const tFrac = r / tileRows;
+        const zDist = p.midZ - p.spanZ / 2 - roofConfig.overhang + tFrac * shedSpan;
+        const yDrop = tFrac * p.ridgeHeight;
+        const tileY = baseWallY + yDrop + 0.08;
+        for (let i = 0; i < Math.ceil(roofLengthX / 0.28); i++) {
+          const centerX = roofMidX - roofLengthX / 2 + i * 0.28 + 0.14;
+          pushRoofBlueprint('ROOF', {
+            x: centerX, z: zDist, y: tileY, sortY: 7.0 + r * 0.01,
+            len: 0.26, h: 0.045, w: 0.46, rot: { x: pitchAngle * 0.5, y: rotY, z: 0 }
+          }, roofConfig);
+        }
+      }
+      pushRoofBlueprint('RIDGE', {
+        x: roofMidX, z: p.midZ + p.spanZ / 2 + roofConfig.overhang, y: roofPeakY + 0.12, sortY: 8.0,
+        len: roofLengthX, h: 0.06, w: 0.26, rot: { x: 0, y: rotY, z: 0 }
+      }, roofConfig);
+    }
+
+    function buildHipRoof(baseLayers, roofConfig, lay, geometry) {
+      buildGableRoof(baseLayers, roofConfig, lay, geometry);
+      if (geometry?.isPolygon) return;
+      const baseWallY = baseLayers * TIJOLO_A + roofConfig.offsetY;
+      const p = getRoofSpanParams(lay, roofConfig, geometry);
+      const roofPeakY = baseWallY + p.ridgeHeight;
+      const pitchAngle = Math.atan2(p.ridgeHeight, p.totalHalfSpan);
+      const endXs = [p.midX - p.spanX / 2, p.midX + p.spanX / 2];
+      endXs.forEach(endX => {
+        const rows = Math.ceil(p.halfWidth / 0.35);
+        for (let r = 0; r < rows; r++) {
+          const tFrac = r / rows;
+          const zOff = tFrac * p.halfWidth;
+          pushRoofBlueprint('ROOF', {
+            x: endX, z: p.midZ + zOff, y: roofPeakY - tFrac * p.ridgeHeight, sortY: 7.5 + r * 0.01,
+            len: 0.26, h: 0.045, w: 0.46, rot: { x: pitchAngle, y: Math.PI / 2, z: 0 }
+          }, roofConfig);
+          pushRoofBlueprint('ROOF', {
+            x: endX, z: p.midZ - zOff, y: roofPeakY - tFrac * p.ridgeHeight, sortY: 7.5 + r * 0.01,
+            len: 0.26, h: 0.045, w: 0.46, rot: { x: -pitchAngle, y: Math.PI / 2, z: 0 }
+          }, roofConfig);
+        }
+      });
+    }
+
+    function buildDomeRoof(baseLayers, roofConfig, geometry) {
+      const baseWallY = baseLayers * TIJOLO_A + roofConfig.offsetY;
+      const cx = geometry.center?.x ?? getPolygonCentroid(geometry.vertices).x;
+      const cz = geometry.center?.z ?? getPolygonCentroid(geometry.vertices).z;
+      const radius = (geometry.radius || 4) * roofConfig.widthScale;
+      const domeH = radius * roofConfig.pitch * 1.5;
+      const rings = Math.max(4, Math.ceil(radius / 0.4));
+      for (let r = 0; r < rings; r++) {
+        const frac = r / rings;
+        const ringR = radius * (1 - frac * 0.92);
+        const ringY = baseWallY + domeH * (1 - ringR / radius);
+        const segs = Math.max(6, Math.floor((geometry.sides || 12) * (1 - frac * 0.2)));
+        for (let s = 0; s < segs; s++) {
+          const ang = (s / segs) * Math.PI * 2 + (roofConfig.rotation * Math.PI / 180);
+          const tilePitch = Math.atan2(domeH * (1 - ringR / radius), ringR || 0.1) * 0.5;
+          pushRoofBlueprint('ROOF', {
+            x: cx + Math.cos(ang) * ringR, z: cz + Math.sin(ang) * ringR, y: ringY, sortY: 7.0 + r * 0.01,
+            len: 0.26, h: 0.045, w: 0.46, rot: { x: tilePitch, y: ang + Math.PI / 2, z: 0 }
+          }, roofConfig);
+        }
+      }
+      pushRoofBlueprint('RIDGE', {
+        x: cx, z: cz, y: baseWallY + domeH + 0.1, sortY: 8.0,
+        len: 0.4, h: 0.08, w: 0.26, rot: { x: 0, y: 0, z: 0 }
+      }, roofConfig);
+    }
+
+    function buildConicalRoof(baseLayers, roofConfig, geometry) {
+      const baseWallY = baseLayers * TIJOLO_A + roofConfig.offsetY;
+      const cx = geometry.center?.x ?? getPolygonCentroid(geometry.vertices || []).x;
+      const cz = geometry.center?.z ?? getPolygonCentroid(geometry.vertices || []).z;
+      const radius = ((geometry.radius || 4) + roofConfig.overhang) * roofConfig.widthScale;
+      const peakH = radius * roofConfig.pitch;
+      const rows = Math.max(4, Math.ceil(radius / 0.35));
+      const segs = Math.max(6, geometry.sides || 16);
+      const rotOff = roofConfig.rotation * Math.PI / 180;
+      for (let r = 0; r < rows; r++) {
+        const frac = (r + 0.5) / rows;
+        const ringR = radius * (1 - frac);
+        const ringY = baseWallY + peakH * frac;
+        const pitchAngle = Math.atan2(peakH, radius) * 0.6;
+        for (let s = 0; s < segs; s++) {
+          const ang = (s / segs) * Math.PI * 2 + rotOff;
+          pushRoofBlueprint('ROOF', {
+            x: cx + Math.cos(ang) * ringR, z: cz + Math.sin(ang) * ringR, y: ringY, sortY: 7.0 + r * 0.01,
+            len: 0.26, h: 0.045, w: 0.46, rot: { x: pitchAngle, y: ang + Math.PI / 2, z: 0 }
+          }, roofConfig);
+        }
+      }
+      pushRoofBlueprint('RIDGE', {
+        x: cx, z: cz, y: baseWallY + peakH + 0.08, sortY: 8.0,
+        len: 0.35, h: 0.08, w: 0.26, rot: { x: 0, y: 0, z: 0 }
+      }, roofConfig);
+    }
+
+    function buildPyramidRoof(baseLayers, roofConfig, geometry) {
+      const baseWallY = baseLayers * TIJOLO_A + roofConfig.offsetY;
+      const verts = geometry.vertices;
+      const peak = getPolygonCentroid(verts);
+      const peakY = baseWallY + roofConfig.pitch * 8;
+      verts.forEach((v, i) => {
+        const v1 = verts[(i + 1) % verts.length];
+        const edgeLen = Math.hypot(v1.x - v.x, v1.z - v.z);
+        const rows = Math.ceil(edgeLen / 0.35);
+        for (let r = 0; r < rows; r++) {
+          const t = (r + 0.5) / rows;
+          const bx = v.x + (v1.x - v.x) * t;
+          const bz = v.z + (v1.z - v.z) * t;
+          const tx = peak.x + (bx - peak.x) * (1 - t * 0.85);
+          const tz = peak.z + (bz - peak.z) * (1 - t * 0.85);
+          const ty = baseWallY + (peakY - baseWallY) * t;
+          const dx = v1.x - v.x, dz = v1.z - v.z;
+          const pitch = Math.atan2(peakY - baseWallY, edgeLen / 2);
+          pushRoofBlueprint('ROOF', {
+            x: (bx + tx) / 2, z: (bz + tz) / 2, y: ty, sortY: 7.0 + r * 0.01 + i * 0.001,
+            len: 0.26, h: 0.045, w: 0.46, rot: { x: pitch, y: Math.atan2(dx, dz), z: 0 }
+          }, roofConfig);
+        }
+      });
+      pushRoofBlueprint('RIDGE', {
+        x: peak.x, z: peak.z, y: peakY, sortY: 8.0,
+        len: 0.35, h: 0.08, w: 0.26, rot: { x: 0, y: 0, z: 0 }
+      }, roofConfig);
+    }
+
+    function buildFloorAndGrout(offsetY = 0.01, floorIndex = 0, holeArea = null, openings = null) {
       const TILE_SIZE = 0.60;
       const GAP = 0.005;
       const STEP = TILE_SIZE + GAP;
@@ -1283,17 +2015,18 @@
         });
       }
 
-      // Add floor strips under external doors (front and back) ONLY ON GROUND FLOOR
       if (floorIndex === 0) {
-        // Front door
-        blueprint.push({
-          type: 'FLOOR', x: -0.75, y: offsetY, sortY: offsetY - 0.45, z: lay.maxZ,
-          len: 0.9, h: thickness, w: TIJOLO_P, rot: { x:0, y:0, z:0 }, claimed: false
-        });
-        // Back door
-        blueprint.push({
-          type: 'FLOOR', x: -1.1, y: offsetY, sortY: offsetY - 0.45, z: lay.minZ,
-          len: 0.9, h: thickness, w: TIJOLO_P, rot: { x:0, y:0, z:0 }, claimed: false
+        const extDoors = openings
+          ? openings.doors.filter(d => d.floor === 0 && ['front', 'back', 'east', 'west'].includes(d.wall))
+          : [{ wall: 'front', pos: -0.75 }, { wall: 'back', pos: -1.1 }];
+        extDoors.forEach(door => {
+          const wp = getDoorWorldPos(door, lay);
+          const isZWall = wp.isZWall;
+          blueprint.push({
+            type: 'FLOOR', x: wp.x, y: offsetY, sortY: offsetY - 0.45, z: wp.z,
+            len: isZWall ? TIJOLO_P : 0.9, h: thickness, w: isZWall ? 0.9 : TIJOLO_P,
+            rot: { x:0, y:0, z:0 }, claimed: false
+          });
         });
       }
     }
@@ -1305,15 +2038,72 @@
       return true; // Always impassable so they never walk through walls
     }
 
-    function resolvePathWaypoints(fromPos, destPos) {
+    function getHouseLayoutForTask(task) {
+      if (window.houseLayouts && task && task.houseIndex !== undefined) {
+        return window.houseLayouts[task.houseIndex];
+      }
+      const lay = window.currentLayout || { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0 };
+      return { minX: lay.minX, maxX: lay.maxX, minZ: lay.minZ, maxZ: lay.maxZ, isRotated: false, ox: 0, oz: 0 };
+    }
+
+    function getPalletCleanupPos(task) {
+      const p = task.pallets ? task.pallets.bricks : palletBricksPos;
+      return new THREE.Vector3(p.x, 0, p.z + 0.45);
+    }
+
+    function getStockApproachPos(task, builderIndex) {
+      let stockTarget = task.pallets ? task.pallets.bricks : palletBricksPos;
+      if (task.type === 'WOOD' || task.type === 'LADDER' || task.type === 'DOOR' || task.type === 'SCAFFOLD') stockTarget = task.pallets ? task.pallets.wood : palletWoodPos;
+      else if (task.type === 'ROOF' || task.type === 'RIDGE') stockTarget = task.pallets ? task.pallets.roof : palletRoofPos;
+      else if (task.type === 'FLOOR' || task.type === 'GROUT' || task.type === 'FOUNDATION' || task.type === 'PILLAR') stockTarget = task.pallets ? task.pallets.floor : palletFloorPos;
+      else if (task.type === 'WINDOW') stockTarget = task.pallets ? task.pallets.glass : palletGlassPos;
+      else if (task.type === 'PAINT') stockTarget = task.pallets ? task.pallets.paint : palletPaintPos;
+      const slot = (builderIndex % 4) * 0.35 - 0.52;
+      return new THREE.Vector3(stockTarget.x + slot, 0, stockTarget.z + 0.45);
+    }
+
+    function getPlacementStandPos(task, workingY) {
+      let x = task.x;
+      let z = task.z;
+      const lay = getHouseLayoutForTask(task);
+      if (task.type !== 'FLOOR' && task.type !== 'GROUT' && task.type !== 'PAINT' && task.type !== 'SCAFFOLD' && task.type !== 'REMOVE_SCAFFOLD') {
+        const rotY = task.rot ? ((task.rot.y % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) : 0;
+        const isZWall = Math.abs(rotY - Math.PI / 2) < 0.15 || Math.abs(rotY - 3 * Math.PI / 2) < 0.15;
+        if (!isZWall) {
+          if (Math.abs(task.z - lay.maxZ) < 0.3) z += 0.55;
+          else if (Math.abs(task.z - lay.minZ) < 0.3) z -= 0.55;
+          else z += (task.z >= (lay.minZ + lay.maxZ) / 2 ? 0.35 : -0.35);
+        } else {
+          if (Math.abs(task.x - lay.maxX) < 0.3) x += 0.55;
+          else if (Math.abs(task.x - lay.minX) < 0.3) x -= 0.55;
+          else x += (task.x >= (lay.minX + lay.maxX) / 2 ? 0.35 : -0.35);
+        }
+      }
+      return new THREE.Vector3(x, workingY, z);
+    }
+
+    function resolvePathWaypoints(fromPos, destPos, task) {
       if (!isWallImpassable()) {
-        return [destPos];
+        return [destPos.clone ? destPos.clone() : destPos];
       }
 
-      const lay = window.currentLayout || { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0 };
+      const hIndex = (task && task.houseIndex !== undefined) ? task.houseIndex : 0;
+      const lay = window.houseLayouts ? window.houseLayouts[hIndex] : (window.currentLayout || { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0 });
+      const ox = lay.ox || 0;
+      const oz = lay.oz || 0;
+      const rot = lay.isRotated;
 
-      const insideRoom1 = (p) => p.x >= lay.minX && p.x <= 1.5 && p.z >= lay.minZ && p.z <= lay.maxZ;
-      const insideRoom2 = (p) => p.x > 1.5 && p.x <= lay.maxX && p.z >= lay.minZ && p.z <= lay.maxZ;
+      // Adjust boundaries for room checks
+      const midX = rot ? -1.5 + ox : 1.5 + ox;
+      
+      const insideRoom1 = (p) => {
+          if (rot) return p.x >= midX && p.x <= lay.maxX && p.z >= lay.minZ && p.z <= lay.maxZ;
+          return p.x >= lay.minX && p.x <= midX && p.z >= lay.minZ && p.z <= lay.maxZ;
+      };
+      const insideRoom2 = (p) => {
+          if (rot) return p.x >= lay.minX && p.x < midX && p.z >= lay.minZ && p.z <= lay.maxZ;
+          return p.x > midX && p.x <= lay.maxX && p.z >= lay.minZ && p.z <= lay.maxZ;
+      };
       const isOutside = (p) => !insideRoom1(p) && !insideRoom2(p);
 
       const fromOut = isOutside(fromPos);
@@ -1324,11 +2114,14 @@
       const destR1 = insideRoom1(destPos);
       const destR2 = insideRoom2(destPos);
 
-      const wpMainOut = new THREE.Vector3(-0.75, 0, lay.maxZ + 0.8);
-      const wpMainIn = new THREE.Vector3(-0.75, 0, lay.maxZ - 0.8);
+      const doorX = rot ? 0.75 + ox : -0.75 + ox;
+      const doorZ = rot ? lay.minZ : lay.maxZ;
       
-      const wpIntR1 = new THREE.Vector3(1.5 - 0.7, 0, 0);
-      const wpIntR2 = new THREE.Vector3(1.5 + 0.7, 0, 0);
+      const wpMainOut = new THREE.Vector3(doorX, 0, doorZ + (rot ? -0.8 : 0.8));
+      const wpMainIn = new THREE.Vector3(doorX, 0, doorZ + (rot ? 0.8 : -0.8));
+      
+      const wpIntR1 = new THREE.Vector3(midX + (rot ? 0.7 : -0.7), 0, oz);
+      const wpIntR2 = new THREE.Vector3(midX + (rot ? -0.7 : 0.7), 0, oz);
 
       if (fromOut && destR1) return [wpMainOut, wpMainIn, destPos];
       if (fromOut && destR2) return [wpMainOut, wpMainIn, wpIntR1, wpIntR2, destPos];
@@ -1340,19 +2133,21 @@
       if (fromR2 && destR1) return [wpIntR2, wpIntR1, destPos];
 
       if (fromOut && destOut) {
-          if (fromPos.z > lay.maxZ && destPos.z < lay.minZ) {
+          if ((!rot && fromPos.z > lay.maxZ && destPos.z < lay.minZ) ||
+              (rot && fromPos.z < lay.minZ && destPos.z > lay.maxZ)) {
               const wayX = lay.maxX + 1.5;
               return [
-                 new THREE.Vector3(wayX, 0, lay.maxZ + 1.0),
-                 new THREE.Vector3(wayX, 0, lay.minZ - 1.0),
+                 new THREE.Vector3(wayX, 0, lay.maxZ + (rot ? -1.0 : 1.0)),
+                 new THREE.Vector3(wayX, 0, lay.minZ + (rot ? 1.0 : -1.0)),
                  destPos
               ];
           }
-          if (fromPos.z < lay.minZ && destPos.z > lay.maxZ) {
+          if ((!rot && fromPos.z < lay.minZ && destPos.z > lay.maxZ) ||
+              (rot && fromPos.z > lay.maxZ && destPos.z < lay.minZ)) {
               const wayX = lay.maxX + 1.5;
               return [
-                 new THREE.Vector3(wayX, 0, lay.minZ - 1.0),
-                 new THREE.Vector3(wayX, 0, lay.maxZ + 1.0),
+                 new THREE.Vector3(wayX, 0, lay.minZ + (rot ? 1.0 : -1.0)),
+                 new THREE.Vector3(wayX, 0, lay.maxZ + (rot ? -1.0 : 1.0)),
                  destPos
               ];
           }
@@ -1386,6 +2181,7 @@
         this.walkAnimTime = Math.random() * 10;
         this.speed = 3.6;
         this.waypoints = [];
+        this.approachTarget = new THREE.Vector3();
 
         const ang = (index / 5) * Math.PI * 2;
         this.spawnPos = new THREE.Vector3(
@@ -1471,36 +2267,56 @@
                return;
             }
 
+            if (!window.houseHeads) window.houseHeads = [];
+            let myHouseIndex = this.index % (window.houseLayouts ? window.houseLayouts.length : 1);
+            if (window.houseHeads[myHouseIndex] === undefined) window.houseHeads[myHouseIndex] = 0;
+
             let task = null;
-            for (let i = blueprintHead; i < blueprint.length; i++) {
-              if (!blueprint[i].claimed) {
+            for (let i = window.houseHeads[myHouseIndex]; i < blueprint.length; i++) {
+              if (!blueprint[i].claimed && (blueprint[i].houseIndex === undefined || blueprint[i].houseIndex === myHouseIndex)) {
                 blueprint[i].claimed = true;
                 task = blueprint[i];
+                window.houseHeads[myHouseIndex] = i;
                 break;
               }
             }
 
+            // If my primary house is done, help other houses!
+            if (!task) {
+               for (let h = 0; h < (window.houseLayouts ? window.houseLayouts.length : 1); h++) {
+                   if (window.houseHeads[h] === undefined) window.houseHeads[h] = 0;
+                   for (let i = window.houseHeads[h]; i < blueprint.length; i++) {
+                       if (!blueprint[i].claimed && (blueprint[i].houseIndex === undefined || blueprint[i].houseIndex === h)) {
+                           blueprint[i].claimed = true;
+                           task = blueprint[i];
+                           window.houseHeads[h] = i;
+                           break;
+                       }
+                   }
+                   if (task) break;
+               }
+            }
+
             if (!task) {
               this.state = 'IDLE';
+              this.timer = 1.0;
               return;
             }
 
             this.currentTask = task;
             if (task.type === 'REMOVE_SCAFFOLD') {
-               this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(task.x, 0, task.z));
+               this.approachTarget.copy(getPlacementStandPos(task, 0));
+               this.waypoints = resolvePathWaypoints(this.group.position, this.approachTarget, task);
                this.state = 'WALK_TO_WALL';
                this.walkTime = 0;
+            } else if (task.type === 'REMOVE_PALLETS') {
+               this.approachTarget.copy(getPalletCleanupPos(task));
+               this.waypoints = resolvePathWaypoints(this.group.position, this.approachTarget, task);
+               this.state = 'WALK_TO_STOCK';
+               this.walkTime = 0;
             } else {
-               let stockTarget = palletBricksPos;
-               if (task.type === 'WOOD' || task.type === 'LADDER' || task.type === 'DOOR' || task.type === 'SCAFFOLD') stockTarget = palletWoodPos;
-               else if (task.type === 'ROOF' || task.type === 'RIDGE') stockTarget = palletRoofPos;
-               else if (task.type === 'FLOOR' || task.type === 'GROUT' || task.type === 'FOUNDATION' || task.type === 'PILLAR') stockTarget = palletFloorPos;
-               else if (task.type === 'WINDOW') stockTarget = palletGlassPos;
-               else if (task.type === 'PAINT') stockTarget = palletPaintPos;
-
-               this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(
-                 stockTarget.x + 1.2, 0, stockTarget.z + (this.index * 0.3)
-               ));
+               this.approachTarget.copy(getStockApproachPos(task, this.index));
+               this.waypoints = resolvePathWaypoints(this.group.position, this.approachTarget, task);
                this.state = 'WALK_TO_STOCK';
                this.walkTime = 0;
             }
@@ -1521,12 +2337,27 @@
         }
         else if (this.state === 'WALK_TO_STOCK') {
           if (this.followWaypoints(dt)) {
-            this.state = 'GRABBING';
-            this.timer = 0;
+            if (this.group.position.distanceTo(this.approachTarget) > 0.65) {
+              this.waypoints = resolvePathWaypoints(this.group.position, this.approachTarget, this.currentTask);
+              this.walkTime = 0;
+            } else if (this.currentTask && this.currentTask.type === 'REMOVE_PALLETS') {
+              this.state = 'PLACING';
+              this.timer = 0;
+            } else {
+              this.state = 'GRABBING';
+              this.timer = 0;
+            }
           }
         }
         else if (this.state === 'GRABBING') {
           if (this.timer >= 0.2) {
+            if (this.group.position.distanceTo(this.approachTarget) > 0.85) {
+              this.state = 'WALK_TO_STOCK';
+              this.waypoints = resolvePathWaypoints(this.group.position, this.approachTarget, this.currentTask);
+              this.walkTime = 0;
+              this.timer = 0;
+              return;
+            }
             this.timer = 0;
             this.carriedMesh.visible = true;
 
@@ -1535,18 +2366,18 @@
               this.carriedMesh.scale.set(0.6, 0.6, 1.5);
               if (this.currentTask.type === 'WOOD') {
                 stockWood = Math.max(0, stockWood - 1);
-                woodStackPivot.scale.y = Math.max(0.01, stockWood / (initialWood || 1));
+                if (woodStackPivot) woodStackPivot.scale.y = Math.max(0.01, stockWood / (initialWood || 1));
               }
             } else if (this.currentTask.type === 'ROOF' || this.currentTask.type === 'RIDGE') {
               this.carriedMesh.material = this.currentTask.type === 'RIDGE' ? ridgeTileMat : roofTileMat;
               this.carriedMesh.scale.set(1.1, 0.4, 1.2);
               stockRoof = Math.max(0, stockRoof - 1);
-              roofStackPivot.scale.y = Math.max(0.01, stockRoof / (initialRoof || 1));
+              if (roofStackPivot) roofStackPivot.scale.y = Math.max(0.01, stockRoof / (initialRoof || 1));
             } else if (this.currentTask.type === 'FLOOR' || this.currentTask.type === 'GROUT' || this.currentTask.type === 'FOUNDATION' || this.currentTask.type === 'PILLAR') {
               this.carriedMesh.material = floorMat;
               this.carriedMesh.scale.set(1.1, 0.5, 1.1);
               stockFloor = Math.max(0, stockFloor - 1);
-              floorStackPivot.scale.y = Math.max(0.01, stockFloor / (initialFloor || 1));
+              if (floorStackPivot) floorStackPivot.scale.y = Math.max(0.01, stockFloor / (initialFloor || 1));
             } else if (this.currentTask.type === 'PAINT') {
               this.carriedMesh.material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.5, roughness: 0.4 });
               this.carriedMesh.scale.set(0.6, 1.2, 0.6);
@@ -1564,7 +2395,7 @@
               this.carriedMesh.scale.set(1, 1, 1);
               stockBricks = Math.max(0, stockBricks - 1);
               estoqueEl.textContent = stockBricks.toLocaleString('pt-BR');
-              brickStackPivot.scale.y = Math.max(0.01, stockBricks / initialBricks);
+              if (brickStackPivot) brickStackPivot.scale.y = Math.max(0.01, stockBricks / initialBricks);
             }
 
             const taskFloor = this.currentTask.floorIndex || 0;
@@ -1580,23 +2411,8 @@
                this.state = 'WALK_TO_STAIRS_UP';
                this.targetY = workingY; // set targetY for after climb
             } else {
-               let groundTargetX = this.currentTask.x;
-               let groundTargetZ = this.currentTask.z;
-               if (this.currentTask.type !== 'FLOOR' && this.currentTask.type !== 'GROUT' && this.currentTask.type !== 'PAINT' && this.currentTask.type !== 'SCAFFOLD') {
-                  const lay = window.currentLayout;
-                  if (!this.currentTask.rot || this.currentTask.rot.y === 0) { // X-wall
-                      if (Math.abs(this.currentTask.z - lay.maxZ) < 0.2) groundTargetZ += 0.7;
-                      else if (Math.abs(this.currentTask.z - lay.minZ) < 0.2) groundTargetZ -= 0.7;
-                      else groundTargetZ += 0.4; // Interior X-wall
-                  } else { // Z-wall
-                      if (Math.abs(this.currentTask.x - lay.maxX) < 0.2) groundTargetX += 0.7;
-                      else if (Math.abs(this.currentTask.x - lay.minX) < 0.2) groundTargetX -= 0.7;
-                      else groundTargetX += 0.4; // Interior Z-wall
-                  }
-               }
-               const rX = (Math.random() - 0.5) * 0.4;
-               const rZ = (Math.random() - 0.5) * 0.4;
-               this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(groundTargetX + rX, workingY, groundTargetZ + rZ));
+               this.approachTarget.copy(getPlacementStandPos(this.currentTask, workingY));
+               this.waypoints = resolvePathWaypoints(this.group.position, this.approachTarget, this.currentTask);
                this.state = 'WALK_TO_WALL';
             }
             this.walkTime = 0;
@@ -1612,31 +2428,26 @@
            if (this.group.position.y >= this.targetY) {
               this.group.position.y = this.targetY;
               
-              let groundTargetX = this.currentTask.x;
-              let groundTargetZ = this.currentTask.z;
-              if (this.currentTask.type !== 'FLOOR' && this.currentTask.type !== 'GROUT' && this.currentTask.type !== 'PAINT' && this.currentTask.type !== 'SCAFFOLD') {
-                  const lay = window.currentLayout;
-                  if (!this.currentTask.rot || this.currentTask.rot.y === 0) { // X-wall
-                      if (Math.abs(this.currentTask.z - lay.maxZ) < 0.2) groundTargetZ += 0.7;
-                      else if (Math.abs(this.currentTask.z - lay.minZ) < 0.2) groundTargetZ -= 0.7;
-                      else groundTargetZ += 0.4; // Interior X-wall
-                  } else { // Z-wall
-                      if (Math.abs(this.currentTask.x - lay.maxX) < 0.2) groundTargetX += 0.7;
-                      else if (Math.abs(this.currentTask.x - lay.minX) < 0.2) groundTargetX -= 0.7;
-                      else groundTargetX += 0.4; // Interior Z-wall
-                  }
-              }
-              const rX = (Math.random() - 0.5) * 0.4;
-              const rZ = (Math.random() - 0.5) * 0.4;
-              this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(groundTargetX + rX, this.targetY, groundTargetZ + rZ));
+              this.approachTarget.copy(getPlacementStandPos(this.currentTask, this.targetY));
+              this.waypoints = resolvePathWaypoints(this.group.position, this.approachTarget, this.currentTask);
               this.state = 'WALK_TO_WALL';
               this.walkTime = 0;
            }
         }
         else if (this.state === 'WALK_TO_WALL') {
           if (this.followWaypoints(dt)) {
-            this.state = 'PLACING';
-            this.timer = 0;
+            const maxDist = (this.currentTask.type === 'ROOF' || this.currentTask.type === 'RIDGE') ? 1.05 : 0.8;
+            if (this.group.position.distanceTo(this.approachTarget) > maxDist) {
+              this.waypoints = resolvePathWaypoints(this.group.position, this.approachTarget, this.currentTask);
+              this.walkTime = 0;
+            } else {
+              this.group.rotation.y = Math.atan2(
+                this.currentTask.x - this.group.position.x,
+                this.currentTask.z - this.group.position.z
+              );
+              this.state = 'PLACING';
+              this.timer = 0;
+            }
           }
         }
         else if (this.state === 'PLACING') {
@@ -1653,6 +2464,8 @@
                   scene.remove(ref.meshObj);
                   ref.meshObj = null;
                }
+            } else if (this.currentTask.type === 'REMOVE_PALLETS') {
+               removeHousePallets(this.currentTask.houseIndex || 0);
             } else {
                spawnInstalledElement(this.currentTask);
             }
@@ -1703,21 +2516,27 @@
                 const rz = (Math.random() - 0.5) * 0.4;
                 const standPos = pos.clone().add(forward.multiplyScalar(offset)).add(new THREE.Vector3(rx, 0, rz));
                 
-                this.waypoints = resolvePathWaypoints(this.group.position, new THREE.Vector3(standPos.x, 0, standPos.z));
+                this.waypoints = [new THREE.Vector3(standPos.x, 0, standPos.z)];
                 this.state = 'WALK_TO_INTERACT';
                 this.walkTime = 0;
               } else {
                 let destPos;
-                if (Math.random() < 0.6) {
-                  const rx = -2 + Math.random() * 7; 
-                  const rz = -2 + Math.random() * 4; 
+                if (window.houseLayouts && window.houseLayouts.length > 1) {
+                  destPos = new THREE.Vector3(
+                    -10 + Math.random() * 120,
+                    0,
+                    5 + Math.random() * 4
+                  );
+                } else if (Math.random() < 0.6) {
+                  const rx = -2 + Math.random() * 7;
+                  const rz = -2 + Math.random() * 4;
                   destPos = new THREE.Vector3(rx, 0, rz);
                 } else {
                   const rx = -4 + Math.random() * 10;
                   const rz = 4.5 + Math.random() * 2;
                   destPos = new THREE.Vector3(rx, 0, rz);
                 }
-                this.waypoints = resolvePathWaypoints(this.group.position, destPos);
+                this.waypoints = [destPos];
                 this.state = 'WANDERING';
                 this.walkTime = 0;
               }
@@ -1744,17 +2563,9 @@
       followWaypoints(dt) {
         if (!this.waypoints || this.waypoints.length === 0) return true;
 
-        this.walkTime = (this.walkTime || 0) + dt;
-        if (this.walkTime > 3.5) {
-          this.waypoints = [];
-          this.walkTime = 0;
-          return true;
-        }
-
         const currentTarget = this.waypoints[0];
         const dir = new THREE.Vector3().subVectors(currentTarget, this.group.position);
         
-        // smooth Y interpolation (flying/climbing up scaffolds)
         const yDiff = dir.y;
         if (Math.abs(yDiff) > 0.01) {
             this.group.position.y += Math.sign(yDiff) * Math.min(Math.abs(yDiff), dt * 4.0);
@@ -1762,9 +2573,9 @@
         
         dir.y = 0;
         const dist = dir.length();
-        const step = this.speed * dt;
+        const step = Math.min(this.speed * dt, dist);
 
-        const threshold = this.waypoints.length === 1 ? 0.25 : 0.12;
+        const threshold = this.waypoints.length === 1 ? 0.15 : 0.08;
 
         if (dist <= step || dist < threshold) {
           this.group.position.x = currentTarget.x;
@@ -1798,13 +2609,15 @@
       }
 
       applyWorkerSeparation() {
+        if (activeBuilders.length > 8) return;
         for (let other of activeBuilders) {
           if (other === this) continue;
           const diff = new THREE.Vector3().subVectors(this.group.position, other.group.position);
           diff.y = 0;
           const dist = diff.length();
+          if (dist > 3.0 || dist === 0) continue;
           const minDist = 0.65;
-          if (dist > 0 && dist < minDist) {
+          if (dist < minDist) {
             diff.normalize();
             this.group.position.addScaledVector(diff, (minDist - dist) * 0.1);
           }
@@ -1817,6 +2630,8 @@
     // =======================================================
     const dummy = new THREE.Object3D();
     let instances = null;
+    let instanceMatrixDirty = false;
+    let animFrameCount = 0;
 
     function initInstancedMeshes() {
       instances = {
@@ -1848,10 +2663,18 @@
       for (let key in instances) {
         let inst = instances[key];
         if (inst.max > 0) {
+          if (key === 'ROOF' || key === 'RIDGE' || key === 'WOOD') {
+            inst.mat = inst.mat.clone();
+            inst.mat.vertexColors = true;
+          }
           inst.mesh = new THREE.InstancedMesh(inst.geo, inst.mat, inst.max);
           inst.mesh.count = 0;
           inst.mesh.castShadow = true;
           inst.mesh.receiveShadow = true;
+          inst.mesh.frustumCulled = false;
+          if (key === 'ROOF' || key === 'RIDGE' || key === 'WOOD') {
+            inst.mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(inst.max * 3), 3);
+          }
           if (key === 'BRICK' || key === 'CUT_BRICK') {
               inst.mesh.instanceColor = null;
           }
@@ -1975,7 +2798,11 @@
       dummy.updateMatrix();
       
       inst.mesh.setMatrixAt(inst.count, dummy.matrix);
-      inst.mesh.instanceMatrix.needsUpdate = true;
+      if (inst.mesh.instanceColor) {
+        const defaults = { ROOF: 0xc2410c, RIDGE: 0x9a3412, WOOD: 0x854d0e };
+        inst.mesh.setColorAt(inst.count, new THREE.Color(item.color || defaults[item.type] || 0xffffff));
+      }
+      instanceMatrixDirty = true;
       if (item.type === 'BRICK' || item.type === 'CUT_BRICK' || item.type === 'PILLAR') {
         if (!inst.meta) inst.meta = [];
         inst.meta[inst.count] = { 
@@ -2001,6 +2828,7 @@
       const decalGeo = new THREE.BoxGeometry(1, 1, 1);
       const paintedBricks = [];
       const floorYBase = (task.floorIndex || 0) * 2.52;
+      const lay = getHouseLayoutForTask(task);
       
       ['BRICK_0', 'BRICK_1', 'BRICK_2', 'CUT_BRICK_0', 'CUT_BRICK_1', 'CUT_BRICK_2', 'PILLAR'].forEach(k => {
          const inst = instances[k];
@@ -2008,11 +2836,10 @@
             for(let i=0; i<inst.count; i++) {
                const m = inst.meta[i];
                if (m && m.isExternal && m.y >= floorYBase && m.y < floorYBase + 2.6) {
-                  if (Math.abs(m.x - task.x) < 2.0 && Math.abs(m.z - task.z) < 2.0) {
-                      if (!m.painted) {
-                          m.painted = true;
-                          paintedBricks.push(m);
-                      }
+                  if (m.x < lay.minX - 0.3 || m.x > lay.maxX + 0.3 || m.z < lay.minZ - 0.3 || m.z > lay.maxZ + 0.3) continue;
+                  if (!m.painted) {
+                      m.painted = true;
+                      paintedBricks.push(m);
                   }
                }
             }
@@ -2021,80 +2848,30 @@
       
       if (paintedBricks.length === 0) return;
       
-      const lay = window.currentLayout;
+      const paintInst = new THREE.InstancedMesh(decalGeo, paintMat, paintedBricks.length);
       
-      // Calculate how many decals we need (corners get an extra decal for the side face)
-      const decals = [];
       for (let i = 0; i < paintedBricks.length; i++) {
          const b = paintedBricks[i];
-         
-         if (b.isPillar) {
-             decals.push({ b, type: 'pillar' });
-             continue;
-         }
-
-         decals.push({ b, type: 'main' });
-         
-         if (!b.rot || b.rot.y === 0) { // X-wall
-             if (b.x - b.len/2 <= lay.minX + 0.02) decals.push({ b, type: 'left' });
-             if (b.x + b.len/2 >= lay.maxX - 0.02) decals.push({ b, type: 'right' });
-         } else { // Z-wall
-             if (b.z - b.len/2 <= lay.minZ + 0.02) decals.push({ b, type: 'left' });
-             if (b.z + b.len/2 >= lay.maxZ - 0.02) decals.push({ b, type: 'right' });
-         }
-      }
-
-      const paintInst = new THREE.InstancedMesh(decalGeo, paintMat, decals.length);
-      
-      for (let i = 0; i < decals.length; i++) {
-         const { b, type } = decals[i];
          dummy.position.set(b.x, b.y, b.z);
          
          if (b.rot) {
-            dummy.rotation.x = b.rot.x || 0;
-            dummy.rotation.y = b.rot.y || 0;
-            dummy.rotation.z = b.rot.z || 0;
+            dummy.rotation.set(b.rot.x || 0, b.rot.y || 0, b.rot.z || 0);
          } else {
             dummy.rotation.set(0, 0, 0);
          }
          
-         if (type === 'pillar') {
-             // For pillar, paint all sides by creating a solid box slightly larger than the pillar
-             dummy.scale.set(b.len + 0.015, b.h + 0.015, b.w + 0.015);
-         } else {
-             // slightly larger than brick to avoid gaps (user request img2)
-             dummy.scale.set(b.len + 0.01, b.h + 0.01, 0.015);
-             
-             if (type === 'main') {
-                 let offset = (b.w / 2) + 0.007;
-                 if (!b.rot || b.rot.y === 0) {
-                     dummy.position.z += (b.z > 0) ? offset : -offset;
-                 } else {
-                     dummy.position.x += (b.x > 0) ? offset : -offset;
-                 }
-             } else {
-                 // Side decal for corner
-                 let sideOffset = (b.len / 2) + 0.007;
-                 // Rotate 90 degrees to cover the side
-                 dummy.rotation.y += Math.PI / 2;
-                 // Scale for the side face (width of brick)
-                 dummy.scale.set(b.w + 0.01, b.h + 0.01, 0.015);
-                 
-                 if (!b.rot || b.rot.y === 0) {
-                     dummy.position.x += (type === 'right') ? sideOffset : -sideOffset;
-                 } else {
-                     dummy.position.z += (type === 'right') ? sideOffset : -sideOffset;
-                 }
-             }
-         }
+         // Simply scale the paint box to be slightly larger than the brick/pillar on all sides.
+         // This perfectly wraps the object, covering corners naturally without complex math,
+         // and completely immune to 180-degree rotation bugs!
+         dummy.scale.set(b.len + 0.018, b.h + 0.018, b.w + 0.018);
          
          dummy.updateMatrix();
          paintInst.setMatrixAt(i, dummy.matrix);
       }
       
       paintInst.instanceMatrix.needsUpdate = true;
-      paintInst.castShadow = true;
-      paintInst.receiveShadow = true;
+      paintInst.castShadow = false;
+      paintInst.receiveShadow = false;
       scene.add(paintInst);
     }
 
@@ -2128,7 +2905,7 @@
     });
     addWorkerBtn.addEventListener('touchstart', e => e.stopPropagation());
 
-    const speedLevels = [1, 2, 5, 10, 20, 30, 60, 120];
+    const speedLevels = [1, 2, 5, 10, 20, 30, 60, 120, 240, 580, 1000];
     let speedIdx = 0;
     let timeSpeed = 1;
 
@@ -2228,22 +3005,72 @@
     zJoystick.addEventListener('touchend', endJoystick);
     zJoystick.addEventListener('touchcancel', endJoystick);
 
+    let playerMode = 0; // 0=Spectator, 1=TP, 2=FP
+    let playerObj = null;
+    let playerPos = new THREE.Vector3(0, 0, 15);
+
+    window.addEventListener('keydown', (e) => {
+       if (e.key === 'v' || e.key === 'V') {
+           playerMode = (playerMode + 1) % 3;
+           if (playerMode > 0 && !playerObj) {
+               playerObj = new THREE.Group();
+               const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.2, 0.3), new THREE.MeshStandardMaterial({ color: 0x0ea5e9 }));
+               body.position.y = 0.6;
+               const head = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3), new THREE.MeshStandardMaterial({ color: 0xffccaa }));
+               head.position.y = 1.35;
+               playerObj.add(body);
+               playerObj.add(head);
+               scene.add(playerObj);
+               playerPos.copy(camera.position);
+               playerPos.y = 0;
+           }
+       }
+    });
+
     function updateCameraAndControls(dt) {
       const moveSpeed = 12.0 * dt;
-      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+      let forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+      let right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
       const up = new THREE.Vector3(0, 1, 0);
+      
+      if (playerMode > 0) {
+          // Lock movement to XZ plane
+          forward.y = 0; forward.normalize();
+          right.y = 0; right.normalize();
+      }
 
-      if (keys['w']) camera.position.addScaledVector(forward, moveSpeed);
-      if (keys['s']) camera.position.addScaledVector(forward, -moveSpeed);
-      if (keys['a']) camera.position.addScaledVector(right, -moveSpeed);
-      if (keys['d']) camera.position.addScaledVector(right, moveSpeed);
-      if (keys[' ']) camera.position.addScaledVector(up, moveSpeed);
-      if (keys['shift']) camera.position.addScaledVector(up, -moveSpeed);
-
+      const move = new THREE.Vector3();
+      if (keys['w']) move.addScaledVector(forward, moveSpeed);
+      if (keys['s']) move.addScaledVector(forward, -moveSpeed);
+      if (keys['a']) move.addScaledVector(right, -moveSpeed);
+      if (keys['d']) move.addScaledVector(right, moveSpeed);
+      
       if (joystickActive) {
-        camera.position.addScaledVector(forward, -joystickMove.y * moveSpeed);
-        camera.position.addScaledVector(right, joystickMove.x * moveSpeed);
+        move.addScaledVector(forward, -joystickMove.y * moveSpeed);
+        move.addScaledVector(right, joystickMove.x * moveSpeed);
+      }
+
+      if (playerMode === 0) {
+          camera.position.add(move);
+          if (keys[' ']) camera.position.addScaledVector(up, moveSpeed);
+          if (keys['shift']) camera.position.addScaledVector(up, -moveSpeed);
+          if (playerObj) playerObj.visible = false;
+      } else {
+          playerPos.add(move);
+          if (playerObj) {
+              playerObj.position.copy(playerPos);
+              playerObj.rotation.y = camYaw;
+              playerObj.visible = (playerMode === 1);
+          }
+          if (playerMode === 1) { // Third Person
+              const offset = new THREE.Vector3(0, 2, 4);
+              offset.applyAxisAngle(new THREE.Vector3(1,0,0), camPitch);
+              offset.applyAxisAngle(new THREE.Vector3(0,1,0), camYaw);
+              camera.position.copy(playerPos).add(offset);
+          } else if (playerMode === 2) { // First Person
+              camera.position.copy(playerPos);
+              camera.position.y += 1.6;
+          }
       }
 
       camera.rotation.order = 'YXZ';
@@ -2261,7 +3088,10 @@
       const rawDelta = Math.min(clock.getDelta(), 0.05);
 
       const totalSimTime = rawDelta * timeSpeed;
-      const steps = Math.min(Math.ceil(totalSimTime / 0.035), 24);
+      const MAX_SUB_DT = 0.04;
+      const MAX_SIM_STEPS = 36;
+      let steps = Math.max(1, Math.ceil(totalSimTime / MAX_SUB_DT));
+      steps = Math.min(steps, MAX_SIM_STEPS);
       const subDt = totalSimTime / steps;
 
       for (let s = 0; s < steps; s++) {
@@ -2270,28 +3100,42 @@
         }
       }
 
-      interactables.forEach(obj => {
-        if (obj.userData.type === 'DOOR') {
-          let near = false;
-          for (let i = 0; i < activeBuilders.length; i++) {
-            if (activeBuilders[i].group.position.distanceTo(obj.position) < 1.5) {
-              near = true;
-              break;
+      if (instanceMatrixDirty && instances) {
+        for (const key in instances) {
+          const inst = instances[key];
+          if (inst.mesh) {
+            inst.mesh.instanceMatrix.needsUpdate = true;
+            if (inst.mesh.instanceColor) inst.mesh.instanceColor.needsUpdate = true;
+          }
+        }
+        instanceMatrixDirty = false;
+      }
+
+      animFrameCount++;
+      if (animFrameCount % 3 === 0) {
+        interactables.forEach(obj => {
+          if (obj.userData.type === 'DOOR') {
+            let near = false;
+            for (let i = 0; i < activeBuilders.length; i++) {
+              if (activeBuilders[i].group.position.distanceTo(obj.position) < 1.5) {
+                near = true;
+                break;
+              }
+            }
+            if (near) obj.userData.targetAngle = Math.PI / 2;
+            else obj.userData.targetAngle = 0;
+          }
+
+          if (obj.userData.targetAngle !== undefined) {
+            if (obj.userData.type === 'DOOR') {
+              obj.userData.pivot.rotation.y += (obj.userData.targetAngle - obj.userData.pivot.rotation.y) * 0.08;
+            } else if (obj.userData.type === 'WINDOW') {
+              obj.userData.pivotL.rotation.y += (obj.userData.targetAngle - obj.userData.pivotL.rotation.y) * 0.08;
+              obj.userData.pivotR.rotation.y += (-obj.userData.targetAngle - obj.userData.pivotR.rotation.y) * 0.08;
             }
           }
-          if (near) obj.userData.targetAngle = Math.PI / 2;
-          else obj.userData.targetAngle = 0;
-        }
-
-        if (obj.userData.targetAngle !== undefined) {
-          if (obj.userData.type === 'DOOR') {
-            obj.userData.pivot.rotation.y += (obj.userData.targetAngle - obj.userData.pivot.rotation.y) * 0.08;
-          } else if (obj.userData.type === 'WINDOW') {
-            obj.userData.pivotL.rotation.y += (obj.userData.targetAngle - obj.userData.pivotL.rotation.y) * 0.08;
-            obj.userData.pivotR.rotation.y += (-obj.userData.targetAngle - obj.userData.pivotR.rotation.y) * 0.08;
-          }
-        }
-      });
+        });
+      }
 
       updateCameraAndControls(rawDelta);
       renderer.render(scene, camera);
@@ -2306,7 +3150,9 @@
     // =======================================================
     // 10. SETUP INICIAL & MENU
     // =======================================================
-    const BUILDINGS = [
+    const BUILTIN_BUILDINGS = [
+      { id: 'l_shape', name: 'Casa em L', floors: 1, roof: 'gable', workers: 3, layout: { minX: -4.0, maxX: 4.0, minZ: -4.0, maxZ: 4.0, divX: [0], divZ: [0] } },
+      { id: 'bairro', name: 'Bairro (20 Casas)', floors: 1, roof: 'gable', workers: 20, layout: {} },
       { id: 1, name: "Casa Simples", floors: 1, roof: 'gable', layout: { minX: -3.0, maxX: 6.0, minZ: -3.0, maxZ: 3.0, divX: [1.5], divZ: [] } },
       { id: 2, name: "Casa Larga", floors: 1, roof: 'flat', layout: { minX: -7.5, maxX: 6.0, minZ: -3.0, maxZ: 3.0, divX: [-3.0, 1.5], divZ: [] } },
       { id: 3, name: "Casa em L", floors: 1, roof: 'flat', layout: { minX: -4.5, maxX: 6.0, minZ: -4.5, maxZ: 4.5, divX: [0.0, 3.0], divZ: [0.0] } },
@@ -2319,22 +3165,288 @@
       { id: 10, name: "Edifício Corporativo", floors: 8, roof: 'flat', layout: { minX: -7.5, maxX: 7.5, minZ: -7.5, maxZ: 7.5, divX: [-3.0, 3.0], divZ: [-3.0, 3.0] } }
     ];
 
+    const IMPORT_STORAGE_KEY = 'construct_sim_imported_buildings';
+    let BUILDINGS = [];
+
+    function loadImportedBuildings() {
+      try {
+        const raw = localStorage.getItem(IMPORT_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveImportedBuildings(list) {
+      localStorage.setItem(IMPORT_STORAGE_KEY, JSON.stringify(list));
+    }
+
+    function refreshBuildingList() {
+      BUILDINGS = [...BUILTIN_BUILDINGS, ...loadImportedBuildings()];
+    }
+
+    function showToast(msg, type) {
+      const toast = document.getElementById('import-toast');
+      toast.textContent = msg;
+      toast.className = 'import-toast show ' + (type || '');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => { toast.className = 'import-toast'; }, 3200);
+    }
+
+    function sanitizeFileName(name) {
+      return name.replace(/[^\w\s\-à-úÀ-Ú]/g, '').trim().replace(/\s+/g, '_') || 'estrutura';
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function buildingToExportData(b) {
+      const lay = {
+        minX: b.layout.minX,
+        maxX: b.layout.maxX,
+        minZ: b.layout.minZ,
+        maxZ: b.layout.maxZ,
+        divX: b.layout.divX || [],
+        divZ: b.layout.divZ || []
+      };
+      const roofConfig = b.roofConfig || validateRoofConfig(null, b.roof || 'gable');
+      const geometry = b.geometry || { type: 'rect' };
+      const geomResolved = resolveGeometry({ layout: lay, geometry });
+      const openings = b.openings || computeDefaultOpeningsForShape(lay, b.floors, geomResolved);
+      return {
+        format: 'construct_sim/v1',
+        name: b.name,
+        floors: b.floors,
+        roof: roofConfig.type,
+        workers: b.workers || 5,
+        layout: lay,
+        geometry: {
+          type: geometry.type || 'rect',
+          rotation: geometry.rotation || geomResolved.rotation || 0,
+          center: geometry.center,
+          radius: geometry.radius,
+          sides: geometry.sides || geometry.segments,
+          vertices: geometry.vertices
+        },
+        roofConfig: {
+          type: roofConfig.type,
+          pitch: roofConfig.pitch,
+          pitchDegrees: Math.round(Math.atan(roofConfig.pitch) * 180 / Math.PI),
+          overhang: roofConfig.overhang,
+          rotation: roofConfig.rotation,
+          lengthScale: roofConfig.lengthScale,
+          widthScale: roofConfig.widthScale,
+          offsetY: roofConfig.offsetY,
+          colors: {
+            tile: '#' + roofConfig.colors.tile.toString(16).padStart(6, '0'),
+            ridge: '#' + roofConfig.colors.ridge.toString(16).padStart(6, '0'),
+            wood: '#' + roofConfig.colors.wood.toString(16).padStart(6, '0')
+          }
+        },
+        paintColor: b.paintColor || null,
+        openings: {
+          doors: openings.doors,
+          windows: openings.windows,
+          stairs: openings.stairs.map(s => ({
+            fromFloor: s.fromFloor,
+            minX: s.minX, maxX: s.maxX, minZ: s.minZ, maxZ: s.maxZ
+          }))
+        }
+      };
+    }
+
+    function exportBuilding(b) {
+      if (b.id === 'bairro') {
+        showToast('O modo Bairro não pode ser exportado.', 'error');
+        return;
+      }
+      const data = buildingToExportData(b);
+      const header = [
+        '# Construct Sim — Estrutura Exportada',
+        '# Formato: JSON (.txt) | Importe pelo botão (+) no menu.',
+        '#',
+        '# === GEOMETRIA (geometry) ===',
+        '# type: rect | circle | cylinder | polygon',
+        '#   rect rotacionado: { "type":"rect", "rotation": 45 }',
+        '#   cilindro/redondo: { "type":"circle", "center":{x,z}, "radius":5, "sides":16, "rotation":0 }',
+        '#   polígono livre: { "type":"polygon", "vertices":[{x,z},...], "rotation":0 }',
+        '#   sides: 6-32 (mais lados = mais circular) | rotation: gira a forma no lote',
+        '#',
+        '# === TELHADO (roofConfig) ===',
+        '# type: gable | flat | hip | shed | dome | conical | pyramid',
+        '#   gable/hip/shed: retangulares e rotacionados',
+        '#   dome/conical: ideal para circle/cylinder',
+        '#   pyramid: ideal para polygon',
+        '#   pitch: inclinação ratio (0.45=padrão) | pitchDegrees: graus (ex: 30)',
+        '#   rotation: direção da cumeeira (°) — alinha com geometry.rotation',
+        '#   overhang: beiral | lengthScale/widthScale: tamanho | offsetY: altura extra',
+        '#   colors: { "tile":"#c2410c", "ridge":"#9a3412", "wood":"#854d0e" }',
+        '#',
+        '# === PINTURA ===',
+        '# paintColor: "#e2e8f0" (hex) — cor externa da construção',
+        '#',
+        '# === ABERTURAS (openings) ===',
+        '# doors/windows: { "floor":0, "wall":"front|back|east|west|edge0", "pos":-0.75 }',
+        '# stairs: { "fromFloor":0, "minX":4.5, "maxX":5.9, "minZ":0.5, "maxZ":2.7 }',
+        ''
+      ].join('\n');
+      const blob = new Blob([header + JSON.stringify(data, null, 2)], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = sanitizeFileName(b.name) + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Estrutura "' + b.name + '" exportada!', 'success');
+    }
+
+    function parseImportedStructure(text) {
+      const cleaned = text.replace(/^#.*$/gm, '').trim();
+      const data = JSON.parse(cleaned);
+      if (!data.name || typeof data.name !== 'string') throw new Error('Campo "name" obrigatório.');
+      if (!data.floors || data.floors < 1) throw new Error('Campo "floors" deve ser >= 1.');
+      const roofLegacy = data.roofConfig?.type || data.roof;
+      if (!ROOF_TYPES.includes(roofLegacy) && !['gable', 'flat'].includes(data.roof)) {
+        throw new Error('Campo "roof" deve ser: ' + ROOF_TYPES.join(', ') + '.');
+      }
+      const lay = data.layout;
+      if (!lay || [lay.minX, lay.maxX, lay.minZ, lay.maxZ].some(v => typeof v !== 'number')) {
+        throw new Error('Campo "layout" inválido (minX, maxX, minZ, maxZ numéricos).');
+      }
+      const floors = Math.floor(data.floors);
+      const layout = {
+        minX: lay.minX, maxX: lay.maxX, minZ: lay.minZ, maxZ: lay.maxZ,
+        divX: Array.isArray(lay.divX) ? lay.divX : [],
+        divZ: Array.isArray(lay.divZ) ? lay.divZ : []
+      };
+      let geometry = null;
+      if (data.geometry) {
+        geometry = data.geometry;
+        if (geometry.type && !GEOMETRY_TYPES.includes(geometry.type)) {
+          throw new Error('geometry.type deve ser: ' + GEOMETRY_TYPES.join(', ') + '.');
+        }
+        if (geometry.type === 'polygon' && (!geometry.vertices || geometry.vertices.length < 3)) {
+          throw new Error('geometry.vertices precisa de pelo menos 3 pontos.');
+        }
+      }
+      const geomResolved = resolveGeometry({ layout, geometry: geometry || { type: 'rect' } });
+      const roofConfig = validateRoofConfig(data.roofConfig, roofLegacy || 'gable');
+      if (data.roofConfig?.rotation === undefined && geomResolved.rotation) {
+        roofConfig.rotation = geomResolved.rotation;
+      }
+      const openings = data.openings
+        ? validateOpenings(data.openings, floors, geomResolved)
+        : computeDefaultOpeningsForShape(layout, floors, geomResolved);
+      let paintColor = null;
+      if (data.paintColor) {
+        const parsed = parseColor(data.paintColor, null);
+        if (parsed !== null && !isNaN(parsed)) paintColor = '#' + parsed.toString(16).padStart(6, '0');
+      }
+      return {
+        id: 'imported_' + Date.now(),
+        name: data.name.trim(),
+        floors: floors,
+        roof: roofConfig.type,
+        roofConfig: roofConfig,
+        geometry: geometry || { type: 'rect' },
+        workers: data.workers ? Math.max(1, Math.floor(data.workers)) : 5,
+        layout: layout,
+        openings: openings,
+        paintColor: paintColor,
+        imported: true
+      };
+    }
+
+    function importBuildingFromFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const building = parseImportedStructure(e.target.result);
+          const imported = loadImportedBuildings();
+          imported.push(building);
+          saveImportedBuildings(imported);
+          refreshBuildingList();
+          renderMenu();
+          showToast('Estrutura "' + building.name + '" importada com sucesso!', 'success');
+        } catch (err) {
+          showToast('Erro ao importar: ' + err.message, 'error');
+        }
+      };
+      reader.onerror = () => showToast('Não foi possível ler o arquivo.', 'error');
+      reader.readAsText(file);
+    }
+
+    function deleteImportedBuilding(id) {
+      const imported = loadImportedBuildings().filter(b => b.id !== id);
+      saveImportedBuildings(imported);
+      refreshBuildingList();
+      renderMenu();
+      showToast('Estrutura removida.', 'success');
+    }
+
     function renderMenu() {
       const menuOptions = document.getElementById('menu-options');
+      menuOptions.innerHTML = '';
       BUILDINGS.forEach(b => {
         const card = document.createElement('div');
         card.className = 'option-card';
+
+        const badge = b.imported ? '<span class="imported-badge">Importada</span>' : '';
+        const roofNames = { gable: 'Cerâmica', flat: 'Laje', hip: 'Hip', shed: 'Shed', dome: 'Domo', conical: 'Cônico', pyramid: 'Pirâmide' };
+        const roofLabel = roofNames[b.roofConfig?.type || b.roof] || b.roof;
+        const canExport = b.id !== 'bairro';
+
         card.innerHTML = `
-          <h2>🏗️ ${b.name}</h2>
-          <span>${b.floors} Andar(es) | Telhado: ${b.roof === 'flat' ? 'Laje' : 'Cerâmica'}</span>
+          <div class="option-card-main">
+            <h2>🏗️ ${escapeHtml(b.name)}${badge}</h2>
+            <span>${b.floors} Andar(es) | Telhado: ${roofLabel}</span>
+          </div>
+          <div class="option-card-actions">
+            ${canExport ? '<button class="menu-btn menu-btn-export" type="button" title="Exportar estrutura">⬇ Exportar</button>' : ''}
+            ${b.imported ? '<button class="menu-btn menu-btn-delete" type="button" title="Remover importada">✕</button>' : ''}
+          </div>
         `;
-        card.addEventListener('click', () => {
-          const colorInput = document.getElementById('paint-color');
-          startSimulation(b, colorInput.value);
+
+        card.querySelector('.option-card-main').addEventListener('click', () => {
+          const color = b.paintColor || document.getElementById('paint-color').value;
+          startSimulation(b, color);
         });
+
+        const exportBtn = card.querySelector('.menu-btn-export');
+        if (exportBtn) {
+          exportBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            exportBuilding(b);
+          });
+        }
+
+        const deleteBtn = card.querySelector('.menu-btn-delete');
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Remover a estrutura importada "' + b.name + '"?')) {
+              deleteImportedBuilding(b.id);
+            }
+          });
+        }
+
         menuOptions.appendChild(card);
       });
     }
+
+    document.getElementById('import-btn').addEventListener('click', () => {
+      document.getElementById('import-file-input').click();
+    });
+    document.getElementById('import-file-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) importBuildingFromFile(file);
+      e.target.value = '';
+    });
 
     function startSimulation(building, paintColor) {
       document.getElementById('main-menu').style.display = 'none';
@@ -2342,35 +3454,50 @@
       document.getElementById('hud-title').innerText = "🏗️ " + building.name;
       
       window.currentPaintColor = parseInt(paintColor.replace('#', '0x'), 16);
+      window.housePalletMeshes = {};
+      window.houseHeads = [];
       
       generateRigidArchitecture(building, window.currentPaintColor);
-      
-      document.getElementById('val-equipe').textContent = building.workers + " / 5";
+
+      let workerCount = building.workers || 5;
+      document.getElementById('val-equipe').textContent = workerCount + " / " + workerCount;
       document.getElementById('val-estoque').textContent = initialBricks.toLocaleString('pt-BR');
 
-      const lay = window.currentLayout;
-      const safeX = Math.min(-7.5, lay.minX - 4.5);
-      palletBricksPos.x = safeX;
-      palletWoodPos.x = safeX;
-      palletRoofPos.x = safeX;
-      palletFloorPos.x = safeX;
-      palletGlassPos.x = safeX;
-      palletPaintPos.x = safeX;
+      if (building.id !== 'bairro') {
+        const lay = window.currentLayout;
+        const safeX = Math.min(-7.5, lay.minX - 4.5);
+        palletBricksPos.x = safeX;
+        palletWoodPos.x = safeX;
+        palletRoofPos.x = safeX;
+        palletFloorPos.x = safeX;
+        palletGlassPos.x = safeX;
+        palletPaintPos.x = safeX;
 
-      brickStackPivot = createStockPallet(palletBricksPos, 0xb45309, new THREE.Vector3(2.0, STACK_BRICK_H, 2.0));
-      woodStackPivot  = createStockPallet(palletWoodPos,   0x854d0e, new THREE.Vector3(1.8, STACK_WOOD_H, 1.8));
-      roofStackPivot  = createStockPallet(palletRoofPos,   0xc2410c, new THREE.Vector3(1.8, STACK_ROOF_H, 1.8));
-      floorStackPivot = createStockPallet(palletFloorPos,  0xe2e8f0, new THREE.Vector3(1.8, 1.0, 1.8));
-      glassStackPivot = createStockPallet(palletGlassPos,  0x88ccff, new THREE.Vector3(1.8, 1.0, 1.8), 'GLASS');
-      paintStackPivot = createStockPallet(palletPaintPos,  window.currentPaintColor || 0x3b82f6, new THREE.Vector3(1.8, 1.0, 1.8), 'PAINT');
+        const brickPallet = createStockPallet(palletBricksPos, 0xb45309, new THREE.Vector3(2.0, STACK_BRICK_H, 2.0));
+        const woodPallet  = createStockPallet(palletWoodPos,   0x854d0e, new THREE.Vector3(1.8, STACK_WOOD_H, 1.8));
+        const roofPallet  = createStockPallet(palletRoofPos,   0xc2410c, new THREE.Vector3(1.8, STACK_ROOF_H, 1.8));
+        const floorPallet = createStockPallet(palletFloorPos,  0xe2e8f0, new THREE.Vector3(1.8, 1.0, 1.8));
+        const glassPallet = createStockPallet(palletGlassPos,  0x88ccff, new THREE.Vector3(1.8, 1.0, 1.8), 'GLASS');
+        const paintPallet = createStockPallet(palletPaintPos,  window.currentPaintColor || 0x3b82f6, new THREE.Vector3(1.8, 1.0, 1.8), 'PAINT');
+        brickStackPivot = brickPallet.pivot;
+        woodStackPivot  = woodPallet.pivot;
+        roofStackPivot  = roofPallet.pivot;
+        floorStackPivot = floorPallet.pivot;
+        glassStackPivot = glassPallet.pivot;
+        paintStackPivot = paintPallet.pivot;
+        storeHousePallets(0, [brickPallet, woodPallet, roofPallet, floorPallet, glassPallet, paintPallet]);
+      }
 
       initInstancedMeshes();
       
-      activeBuilders.push(new Builder(BUILDER_PALETTES[0], 0));
+      for (let i = 0; i < workerCount; i++) {
+        activeBuilders.push(new Builder(BUILDER_PALETTES[i % 5], i));
+      }
 
       animate();
     }
 
+    refreshBuildingList();
     renderMenu();
   </script>
 </body>
